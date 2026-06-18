@@ -6,7 +6,9 @@ through the project.
 ## Workflow: issue → branch → PR → merge
 
 1. **Start from an issue.** Every change should map to a GitHub issue. If one
-   doesn't exist, open it first using the issue templates.
+   doesn't exist, open it first using the issue templates. Only the **current**
+   milestone is pre-populated with issues — see [ROADMAP.md](ROADMAP.md) for how
+   to break down the next milestone once the current one's issues are closed.
 2. **Branch off `main`.** Use a descriptive branch name:
    - `feat/<short-description>` for features
    - `fix/<short-description>` for bug fixes
