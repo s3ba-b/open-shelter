@@ -10,4 +10,6 @@ var redis = builder.AddRedis("redis")
 var messaging = builder.AddRabbitMQ("messaging")
     .WithDataVolume();
 
+builder.AddProject<Projects.OpenShelter_Gateway>("gateway");
+
 builder.Build().Run();
