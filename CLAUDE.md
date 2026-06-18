@@ -35,6 +35,13 @@ issue → branch (`feat/`, `fix/`, `chore/`, `docs/`) → PR (`Closes #N`) → C
 → squash merge. Direct commits to `main` are not allowed; `main` is branch
 protected. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Project website
+
+`docs/` is the GitHub Pages source for the public landing page (served from
+`main` at https://s3ba-b.github.io/open-shelter/) — it is not a general docs
+folder, don't repurpose it. It's a hand-written static page (no build step);
+see the "Current milestone" section below for when to update it.
+
 ## Licensing
 
 AGPL-3.0. Any party that runs this software as a network service must offer the
@@ -52,3 +59,9 @@ and issues for the current breakdown.
 Only the current milestone has issues filed against it. When its issues are all
 closed, break down the next milestone from [ROADMAP.md](ROADMAP.md) into issues
 before starting work on it — don't assume someone else has already done this.
+At the same time, update the roadmap section of `docs/index.html` (the
+`#roadmap` list and the hero badge): mark the finished milestone done and move
+the "in progress" marker to the next one. The page can't fetch live milestone
+status itself (the repo is private, and GitHub's milestones API needs auth a
+public static page can't hold), so this has to be a manual step done at the
+same time as the issue breakdown above.

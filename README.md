@@ -6,6 +6,8 @@
 [![CI](https://github.com/s3ba-b/open-shelter/actions/workflows/ci.yml/badge.svg)](https://github.com/s3ba-b/open-shelter/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
+🌐 Landing page: https://s3ba-b.github.io/open-shelter/
+
 ## Overview
 
 Many small shelters and rescues run on spreadsheets and ad-hoc tools. Open Shelter is a free, self-hostable, multi-tenant platform that handles animals, intake, adoptions, fostering, and medical scheduling — built on .NET Aspire to demonstrate a modern, observable, distributed-systems architecture.
