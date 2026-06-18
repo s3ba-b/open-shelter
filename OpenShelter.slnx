@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/OpenShelter.AppHost/OpenShelter.AppHost.csproj" />
+    <Project Path="src/OpenShelter.Gateway/OpenShelter.Gateway.csproj" />
     <Project Path="src/OpenShelter.ServiceDefaults/OpenShelter.ServiceDefaults.csproj" />
   </Folder>
 </Solution>
