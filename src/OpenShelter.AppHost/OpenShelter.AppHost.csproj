@@ -8,4 +8,10 @@
     <UserSecretsId>7edcc677-a0ea-42eb-8866-efba8dd2f82a</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.4.5" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.4.5" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.4.5" />
+  </ItemGroup>
+
 </Project>
