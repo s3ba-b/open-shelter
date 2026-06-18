@@ -12,12 +12,12 @@
   <div class="container">
     <span class="badge">In active development · M0 walking skeleton</span>
     <h1>Open Shelter <span class="acronym">(OSMP)</span></h1>
-    <p class="tagline">An open-source, self-hostable platform that lets animal shelters and rescue
-      organizations run intake, adoptions, fostering, and medical scheduling — without spreadsheets,
-      and without paying for commercial SaaS they can't afford.</p>
+    <p class="tagline">A free tool that helps animal shelters and rescues keep track of their animals,
+      adoptions, foster homes, and vet appointments — so they can stop juggling spreadsheets, without
+      paying for software they can't afford.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="https://github.com/s3ba-b/open-shelter">View on GitHub</a>
-      <a class="btn btn-secondary" href="#architecture">See the architecture</a>
+      <a class="btn btn-secondary" href="#features">See what it does</a>
     </div>
   </div>
 </header>
@@ -27,10 +27,10 @@
   <section class="section">
     <div class="container">
       <h2>Why this exists</h2>
-      <p class="lead">Small shelters and rescues run on spreadsheets and ad-hoc tools because
-        commercial shelter-management SaaS is priced for organizations with budgets they don't have.
-        Open Shelter is a free, self-hostable, multi-tenant platform built for the non-commercial sector —
-        and licensed so it can never be captured into a closed, exploitative product.</p>
+      <p class="lead">Most small shelters and rescues get by on spreadsheets and a patchwork of free
+        tools, because the professional shelter software costs more than their budget allows. Open Shelter
+        gives them a proper system for free — one they can run themselves, and that's licensed so it can
+        never be locked away and turned into yet another paid product they can't access.</p>
     </div>
   </section>
 
@@ -39,31 +39,35 @@
       <h2>What it does</h2>
       <div class="grid">
         <div class="card">
-          <h3>Multi-tenancy &amp; isolation</h3>
-          <p>Each shelter is a tenant with data isolation enforced at the data layer
-            (EF Core global query filters over a resolved tenant context) — not just at the UI.</p>
+          <h3>Private to each shelter</h3>
+          <p>Many shelters can share one installation, but each one only ever sees its own animals,
+            people, and records. That separation is built deep into the system — not just hidden on
+            the screen.</p>
         </div>
         <div class="card">
-          <h3>Animal management</h3>
-          <p>Animal records, intake history, and status tracking — available, fostered, adopted,
-            medical hold.</p>
+          <h3>Animal records</h3>
+          <p>Keep a record for every animal — where it came from, and whether it's available, in a
+            foster home, adopted, or on a medical hold.</p>
         </div>
         <div class="card">
-          <h3>Adoption workflow</h3>
-          <p>Applications, applicant records, and an approval flow from intake to adoption.</p>
+          <h3>Adoptions</h3>
+          <p>Take in adoption applications, keep applicant details, and follow each one from first
+            enquiry through to a completed adoption.</p>
         </div>
         <div class="card">
-          <h3>Fostering</h3>
-          <p>Foster placements and the people who provide them, tracked end-to-end.</p>
+          <h3>Foster homes</h3>
+          <p>Track which animals are placed in foster care and the volunteers caring for them, from
+            drop-off to return.</p>
         </div>
         <div class="card">
-          <h3>Medical scheduling</h3>
-          <p>Vaccination and treatment schedules with due dates, surfaced through background reminders.</p>
+          <h3>Vet &amp; medical reminders</h3>
+          <p>Keep vaccination and treatment schedules with due dates, and get a reminder before each
+            one is due.</p>
         </div>
         <div class="card">
-          <h3>Identity &amp; roles</h3>
-          <p>Token-based auth with tenant claims; role-based access per organization — admin, staff,
-            volunteer.</p>
+          <h3>Accounts &amp; roles</h3>
+          <p>Staff, volunteers, and admins each sign in with the right level of access for their job —
+            so people only see and change what they should.</p>
         </div>
       </div>
     </div>
@@ -71,9 +75,11 @@
 
   <section class="section" id="architecture">
     <div class="container">
+      <span class="badge">For developers</span>
       <h2>Built to demonstrate, not just to work</h2>
-      <p class="lead">Open Shelter doubles as a reference implementation of cloud-native,
-        multi-tenant architecture on .NET.</p>
+      <p class="lead">Open Shelter also serves as a reference implementation of cloud-native,
+        multi-tenant architecture on .NET. If you're not a developer, feel free to skip this part —
+        none of it changes what the tool does for your shelter.</p>
       <div class="stack-row">
         <span class="pill">.NET 10</span>
         <span class="pill">.NET Aspire</span>
@@ -101,15 +107,15 @@
   <section class="section alt" id="roadmap">
     <div class="container">
       <h2>Roadmap</h2>
-      <p class="lead">Delivered as working, demoable increments — each milestone is a vertical slice,
-        not a layer.</p>
+      <p class="lead">Built in steps, where each step is something that actually works and you can
+        try — not a half-finished layer.</p>
       <ol class="roadmap">
-        <li><strong>M0 — Walking skeleton</strong><span>Aspire orchestration, tenant resolution, first isolation test. <em>In progress.</em></span></li>
-        <li><strong>M1 — Identity &amp; access</strong><span>Token-based auth, tenant claims, roles.</span></li>
-        <li><strong>M2 — Animals</strong><span>First end-to-end vertical slice: records, intake, status.</span></li>
-        <li><strong>M3 — Adoption &amp; fostering</strong><span>Applications, approvals, foster placements.</span></li>
-        <li><strong>M4 — Medical scheduling &amp; background worker</strong><span>Due-date reminders, tenant-tagged tracing.</span></li>
-        <li><strong>M5 — Hardening &amp; release</strong><span>Full isolation suite as a CI gate, Docker Compose deployment, architecture diagram.</span></li>
+        <li><strong>M0 — Walking skeleton</strong><span>The foundations: the system runs end to end, and the data-privacy safeguard is proven by an automated test. <em>In progress.</em></span></li>
+        <li><strong>M1 — Identity &amp; access</strong><span>Secure sign-in, with the right level of access for each person and shelter.</span></li>
+        <li><strong>M2 — Animals</strong><span>The first complete feature, start to finish: animal records, intake, and status.</span></li>
+        <li><strong>M3 — Adoption &amp; fostering</strong><span>Adoption applications, approvals, and foster placements.</span></li>
+        <li><strong>M4 — Medical scheduling &amp; background worker</strong><span>Automatic reminders for vaccinations and treatments before they're due.</span></li>
+        <li><strong>M5 — Hardening &amp; release</strong><span>Final safety checks, simple self-hosting, and an architecture overview.</span></li>
       </ol>
     </div>
   </section>
@@ -117,11 +123,11 @@
   <section class="section" id="license">
     <div class="container">
       <h2>License: built to stay open</h2>
-      <p class="lead">Open Shelter is licensed under <strong>AGPL-3.0</strong>. Anyone may self-host it,
-        modify it, even charge for running it — but anyone who offers it as a service must publish their
-        complete source, including modifications, under the same license. For a multi-tenant SaaS, that
-        closes off the one move that usually kills open-source projects: fork it, close it, sell it.
-        Any improvement returns to the community by construction.</p>
+      <p class="lead">Open Shelter is free and open source under the <strong>AGPL-3.0</strong> license.
+        Anyone can run it, change it, even charge to host it for others — but if you offer it as a service,
+        you have to share your version of the code too. In plain terms: every improvement has to come back
+        to the community, so the project can't be quietly taken private, closed off, and sold back to the
+        shelters it was built for.</p>
     </div>
   </section>
 
