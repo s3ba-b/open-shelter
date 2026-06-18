@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Shelter (OSMP) — Multi-Tenant Animal Shelter & Rescue Management Platform</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">In active development · M0 walking skeleton</span>
+    <h1>Open Shelter <span class="acronym">(OSMP)</span></h1>
+    <p class="tagline">An open-source, self-hostable platform that lets animal shelters and rescue
+      organizations run intake, adoptions, fostering, and medical scheduling — without spreadsheets,
+      and without paying for commercial SaaS they can't afford.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/s3ba-b/open-shelter">View on GitHub</a>
+      <a class="btn btn-secondary" href="#architecture">See the architecture</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="section">
+    <div class="container">
+      <h2>Why this exists</h2>
+      <p class="lead">Small shelters and rescues run on spreadsheets and ad-hoc tools because
+        commercial shelter-management SaaS is priced for organizations with budgets they don't have.
+        Open Shelter is a free, self-hostable, multi-tenant platform built for the non-commercial sector —
+        and licensed so it can never be captured into a closed, exploitative product.</p>
+    </div>
+  </section>
+
+  <section class="section alt" id="features">
+    <div class="container">
+      <h2>What it does</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Multi-tenancy &amp; isolation</h3>
+          <p>Each shelter is a tenant with data isolation enforced at the data layer
+            (EF Core global query filters over a resolved tenant context) — not just at the UI.</p>
+        </div>
+        <div class="card">
+          <h3>Animal management</h3>
+          <p>Animal records, intake history, and status tracking — available, fostered, adopted,
+            medical hold.</p>
+        </div>
+        <div class="card">
+          <h3>Adoption workflow</h3>
+          <p>Applications, applicant records, and an approval flow from intake to adoption.</p>
+        </div>
+        <div class="card">
+          <h3>Fostering</h3>
+          <p>Foster placements and the people who provide them, tracked end-to-end.</p>
+        </div>
+        <div class="card">
+          <h3>Medical scheduling</h3>
+          <p>Vaccination and treatment schedules with due dates, surfaced through background reminders.</p>
+        </div>
+        <div class="card">
+          <h3>Identity &amp; roles</h3>
+          <p>Token-based auth with tenant claims; role-based access per organization — admin, staff,
+            volunteer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="architecture">
+    <div class="container">
+      <h2>Built to demonstrate, not just to work</h2>
+      <p class="lead">Open Shelter doubles as a reference implementation of cloud-native,
+        multi-tenant architecture on .NET.</p>
+      <div class="stack-row">
+        <span class="pill">.NET 10</span>
+        <span class="pill">.NET Aspire</span>
+        <span class="pill">PostgreSQL</span>
+        <span class="pill">Redis</span>
+        <span class="pill">RabbitMQ</span>
+        <span class="pill">OpenTelemetry</span>
+        <span class="pill">Docker Compose</span>
+        <span class="pill">Azure Container Apps (optional)</span>
+      </div>
+      <ul class="bullet-list">
+        <li><strong>Aspire-orchestrated services</strong> — gateway, identity, business services, and a
+          background worker, with all backing resources wired through the AppHost and visible in the
+          Aspire dashboard.</li>
+        <li><strong>Tenant-aware observability</strong> — OpenTelemetry spans tagged by tenant, so tracing
+          stays meaningful in a multi-tenant system.</li>
+        <li><strong>Isolation as a release gate</strong> — an automated cross-tenant test suite covers
+          every tenant-scoped entity and endpoint; a failing isolation test blocks a release.</li>
+        <li><strong>Cloud-agnostic by default</strong> — primary deployment is Docker Compose, runnable on
+          free/local infrastructure, with Azure Container Apps documented as an optional path.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section alt" id="roadmap">
+    <div class="container">
+      <h2>Roadmap</h2>
+      <p class="lead">Delivered as working, demoable increments — each milestone is a vertical slice,
+        not a layer.</p>
+      <ol class="roadmap">
+        <li><strong>M0 — Walking skeleton</strong><span>Aspire orchestration, tenant resolution, first isolation test. <em>In progress.</em></span></li>
+        <li><strong>M1 — Identity &amp; access</strong><span>Token-based auth, tenant claims, roles.</span></li>
+        <li><strong>M2 — Animals</strong><span>First end-to-end vertical slice: records, intake, status.</span></li>
+        <li><strong>M3 — Adoption &amp; fostering</strong><span>Applications, approvals, foster placements.</span></li>
+        <li><strong>M4 — Medical scheduling &amp; background worker</strong><span>Due-date reminders, tenant-tagged tracing.</span></li>
+        <li><strong>M5 — Hardening &amp; release</strong><span>Full isolation suite as a CI gate, Docker Compose deployment, architecture diagram.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="license">
+    <div class="container">
+      <h2>License: built to stay open</h2>
+      <p class="lead">Open Shelter is licensed under <strong>AGPL-3.0</strong>. Anyone may self-host it,
+        modify it, even charge for running it — but anyone who offers it as a service must publish their
+        complete source, including modifications, under the same license. For a multi-tenant SaaS, that
+        closes off the one move that usually kills open-source projects: fork it, close it, sell it.
+        Any improvement returns to the community by construction.</p>
+    </div>
+  </section>
+
+  <section class="section alt cta-section">
+    <div class="container">
+      <h2>Follow along or get involved</h2>
+      <p class="lead">The project is in its first milestone. Issues, architecture notes, and progress
+        are tracked openly on GitHub.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/s3ba-b/open-shelter">github.com/s3ba-b/open-shelter</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>Open Shelter (OSMP) — an open-source project. Licensed AGPL-3.0.</p>
+  </div>
+</footer>
+
+</body>
+</html>
