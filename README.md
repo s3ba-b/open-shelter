@@ -33,14 +33,20 @@ Many small shelters and rescues run on spreadsheets and ad-hoc tools. Open Shelt
 ### Prerequisites
 
 - .NET 10 SDK
+- [Aspire CLI](https://aspire.dev) (`aspire`)
 - Docker (for backing resources orchestrated by Aspire)
 
 ### Run locally
 
 ```bash
-# TODO: fill in once the AppHost orchestrates the full service set (tracked in the M0 milestone)
-dotnet run --project src/OpenShelter.AppHost
+# TODO: full service set (gateway, business services, Postgres/Redis/broker)
+# lands with the M0 milestone — this currently starts the bare AppHost skeleton.
+aspire run
 ```
+
+`aspire run` auto-detects the AppHost project in the repo and builds/runs it; no
+need to pass `--project`. If you don't have the Aspire CLI installed, `dotnet
+run --project src/OpenShelter.AppHost` works as a fallback.
 
 ## Architecture
 
