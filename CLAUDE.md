@@ -42,6 +42,15 @@ protected. See [CONTRIBUTING.md](CONTRIBUTING.md).
 folder, don't repurpose it. It's a hand-written static page (no build step);
 see the "Current milestone" section below for when to update it.
 
+The page must stay understandable to non-technical visitors (shelter staff,
+volunteers), not only developers, while keeping its value as a technical
+reference. Follow "simple first, technical second": the upper sections (hero,
+"why this exists", feature cards, roadmap, license) use plain, benefit-focused
+language with no jargon; technical terms (Aspire, EF Core, OpenTelemetry,
+multi-tenancy, OpenTelemetry spans, etc.) stay confined to the architecture
+section, which is explicitly marked "For developers" and flagged as skippable.
+Page language is English.
+
 ## Licensing
 
 AGPL-3.0. Any party that runs this software as a network service must offer the
