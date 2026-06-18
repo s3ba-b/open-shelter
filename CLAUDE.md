@@ -5,10 +5,10 @@
 Open Shelter (OSMP) — a multi-tenant SaaS platform for animal shelters and rescue
 organizations (animals, intake, adoptions, fostering, medical scheduling), built
 on .NET 10 / .NET Aspire to demonstrate distributed-systems architecture and
-multi-tenant data isolation. Full objectives, scope, success measures,
-constraints, milestones, and licensing rationale live in the project charter
-this repo was bootstrapped from (kept in the `project-ideas` idea-backlog repo,
-not here).
+multi-tenant data isolation. The milestone breakdown lives in
+[ROADMAP.md](ROADMAP.md) in this repo. Full objectives, success measures,
+constraints, and licensing rationale live in the project charter this repo was
+bootstrapped from (kept in the `project-ideas` idea-backlog repo, not here).
 
 ## Stack
 
@@ -48,3 +48,7 @@ service + PostgreSQL/Redis/broker, all healthy in the Aspire dashboard;
 `ITenantContext` resolution and EF Core global query filters wired; first
 automated cross-tenant isolation test passing. See the repo's GitHub milestones
 and issues for the current breakdown.
+
+Only the current milestone has issues filed against it. When its issues are all
+closed, break down the next milestone from [ROADMAP.md](ROADMAP.md) into issues
+before starting work on it — don't assume someone else has already done this.
