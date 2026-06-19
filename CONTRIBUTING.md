@@ -24,6 +24,10 @@ through the project.
 
 Direct commits to `main` are not allowed; `main` is protected.
 
+> **Note:** `main` history was rewritten on 2026-06-19 to correct commit author
+> metadata, so commit SHAs from before that date may have changed — old commit
+> links can point to commits no longer reachable from `main`.
+
 ## Development setup
 
 ```bash
