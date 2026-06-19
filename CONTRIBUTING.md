@@ -42,7 +42,8 @@ dotnet test
 
 - Follow standard .NET / C# conventions.
 - Every tenant-scoped entity or endpoint must be covered by a cross-tenant
-  isolation test — this suite is a release gate (see the project charter).
+  isolation test — this suite is a release gate (see the project charter,
+  [CHARTER.md](CHARTER.md)).
 - Keep changes focused; avoid unrelated refactors in the same PR.
 
 ## Reporting bugs
