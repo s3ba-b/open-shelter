@@ -168,8 +168,8 @@
       <p class="lead" data-i18n="roadmap.lead">Built in steps, where each step is something that actually works and you can
         try — not a half-finished layer.</p>
       <ol class="roadmap">
-        <li><strong data-i18n="roadmap.m0.t">M0 — Walking skeleton</strong><span data-i18n="roadmap.m0.d">The foundations: the system runs end to end, and the data-privacy safeguard is proven by an automated test. </span><em data-i18n="roadmap.m0.status">Done.</em></li>
-        <li><strong data-i18n="roadmap.m1.t">M1 — Identity &amp; access</strong><span data-i18n="roadmap.m1.d">Secure sign-in, with the right level of access for each person and shelter.</span><em data-i18n="roadmap.m1.status">In progress.</em></li>
+        <li><strong data-i18n="roadmap.m0.t">M0 — Walking skeleton</strong><span data-i18n="roadmap.m0.d">The foundations: the system runs end to end, and the data-privacy safeguard is proven by an automated test. </span><em data-i18n="roadmap.status.done">Done.</em></li>
+        <li><strong data-i18n="roadmap.m1.t">M1 — Identity &amp; access</strong><span data-i18n="roadmap.m1.d">Secure sign-in, with the right level of access for each person and shelter.</span><em data-i18n="roadmap.status.inProgress">In progress.</em></li>
         <li><strong data-i18n="roadmap.m2.t">M2 — Animals</strong><span data-i18n="roadmap.m2.d">The first complete feature, start to finish: animal records, intake, and status.</span></li>
         <li><strong data-i18n="roadmap.m3.t">M3 — A screen for staff</strong><span data-i18n="roadmap.m3.d">An easy-to-use website where shelter staff and volunteers sign in and manage their animals, day to day.</span></li>
         <li><strong data-i18n="roadmap.m4.t">M4 — Adoption &amp; fostering</strong><span data-i18n="roadmap.m4.d">Adoption applications, approvals, and foster placements.</span></li>
@@ -230,6 +230,10 @@
     });
     buttons.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
     try { localStorage.setItem('os-lang', lang); } catch (e) {}
+    // Lets later scripts (live milestone status) re-render their own
+    // dynamic text whenever the language changes, without this script
+    // needing to know about them.
+    (window.OS_onLangChange || []).forEach(function (fn) { fn(lang); });
   }
 
   buttons.forEach(function (b) {
@@ -240,6 +244,103 @@
   try { saved = localStorage.getItem('os-lang'); } catch (e) {}
   var initial = saved || ((navigator.language || '').toLowerCase().indexOf('pl') === 0 ? 'pl' : 'en');
   apply(initial);
+})();
+</script>
+<script>
+// Live milestone status (progressive enhancement). The hand-written "Done."
+// / "In progress." text above is the fallback if this fetch fails, is
+// rate-limited (GitHub's anonymous REST API caps at 60 requests/hour per
+// IP), or runs with JS off — so it must stay accurate on its own.
+//
+// "Current" milestone is derived from issue counts per GitHub milestone,
+// walked in M0..M6 sequence order (parsed from the title, not GitHub's
+// internal milestone number, since milestones weren't created in roadmap
+// order — M3 was added after M4-M6). The first non-fully-closed milestone
+// in that sequence is "in progress"; everything before it is "done";
+// everything after is left alone. Walking in order (rather than just
+// checking each milestone's own open_issues count) matters: a stray
+// long-lived issue filed against a future milestone (e.g. a design
+// decision tracked early) would otherwise look like that milestone is
+// already underway.
+(function () {
+  var API_URL = 'https://api.github.com/repos/s3ba-b/open-shelter/milestones?state=all&per_page=100';
+  var CACHE_KEY = 'os-milestones-v1';
+  var CACHE_TTL_MS = 60 * 60 * 1000;
+  var data = null;
+
+  function dictFor(lang) {
+    return (window.OS_I18N && window.OS_I18N[lang]) || (window.OS_I18N && window.OS_I18N.en) || {};
+  }
+
+  function deriveCurrent(milestones) {
+    var bySeq = milestones
+      .map(function (m) {
+        var match = /^M(\d+)/.exec(m.title);
+        return match ? { seq: parseInt(match[1], 10), title: m.title, open: m.open_issues, closed: m.closed_issues } : null;
+      })
+      .filter(Boolean)
+      .sort(function (a, b) { return a.seq - b.seq; });
+
+    var current = null;
+    bySeq.forEach(function (m) {
+      var done = m.closed > 0 && m.open === 0;
+      if (current) { m.status = null; return; }
+      if (done) { m.status = 'done'; return; }
+      m.status = 'inProgress';
+      current = m;
+    });
+    return bySeq;
+  }
+
+  function render(lang) {
+    if (!data) return;
+    var t = dictFor(lang);
+
+    data.forEach(function (m) {
+      var strong = document.querySelector('[data-i18n="roadmap.m' + m.seq + '.t"]');
+      var li = strong && strong.closest('li');
+      if (!li) return;
+      var em = li.querySelector('em');
+      if (!m.status) {
+        if (em) em.remove();
+        return;
+      }
+      if (!em) {
+        em = document.createElement('em');
+        li.appendChild(em);
+      }
+      em.textContent = t['roadmap.status.' + m.status] || em.textContent;
+    });
+
+    var current = data.filter(function (m) { return m.status === 'inProgress'; })[0];
+    if (!current) return;
+    var badge = document.querySelector('[data-i18n="hero.badge"]');
+    if (!badge) return;
+    var label = current.title.replace(/^M\d+\s*[—-]\s*/, '');
+    label = label.charAt(0).toLowerCase() + label.slice(1);
+    var prefix = t['hero.badgePrefix'] || 'In active development';
+    badge.textContent = prefix + ' · M' + current.seq + ' ' + label;
+  }
+
+  window.OS_onLangChange = window.OS_onLangChange || [];
+  window.OS_onLangChange.push(render);
+
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch (e) {}
+  if (cached && cached.ts && (Date.now() - cached.ts) < CACHE_TTL_MS) {
+    data = cached.data;
+    render(document.documentElement.lang || 'en');
+    return;
+  }
+
+  fetch(API_URL, { headers: { Accept: 'application/vnd.github+json' } })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error(r.status)); })
+    .then(function (milestones) {
+      data = deriveCurrent(milestones);
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+      render(document.documentElement.lang || 'en');
+    })
+    .catch(function () { /* keep the static fallback already in the HTML */ });
 })();
 </script>
 <script>

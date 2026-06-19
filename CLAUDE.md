@@ -43,8 +43,14 @@ protected. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 `docs/` is the GitHub Pages source for the public landing page (served from
 `main` at https://s3ba-b.github.io/open-shelter/) — it is not a general docs
-folder, don't repurpose it. It's a hand-written static page (no build step);
-see the "Current milestone" section below for when to update it.
+folder, don't repurpose it. It's a hand-written static page (no build step).
+The roadmap section's "Done"/"In progress" markers and the hero badge are
+populated live via a client-side fetch against the repo's GitHub milestones
+API (now public, so no auth needed) — see the script in `docs/index.html`
+just before the lightbox script. The hand-written fallback text in the HTML
+only matters if that fetch fails, is rate-limited, or runs with JS off, so
+keep it roughly current, but there's no manual step required when a
+milestone finishes.
 
 The page must stay understandable to non-technical visitors (shelter staff,
 volunteers), not only developers, while keeping its value as a technical
@@ -68,18 +74,16 @@ service (§13). Sign off commits (`git commit -s`, DCO) to contribute.
 
 ## Current milestone
 
-M0 — Walking skeleton: Aspire AppHost orchestrating a gateway + one business
-service + PostgreSQL/Redis/broker, all healthy in the Aspire dashboard;
-`ITenantContext` resolution and EF Core global query filters wired; first
-automated cross-tenant isolation test passing. See the repo's GitHub milestones
-and issues for the current breakdown.
+M1 — Identity & access: token-based auth with tenant claims; roles within an
+organization (admin, staff, volunteer); isolation enforced through the auth
+pipeline. See the repo's GitHub milestones and issues for the current
+breakdown.
 
-Only the current milestone has issues filed against it. When its issues are all
-closed, break down the next milestone from [ROADMAP.md](ROADMAP.md) into issues
-before starting work on it — don't assume someone else has already done this.
-At the same time, update the roadmap section of `docs/index.html` (the
-`#roadmap` list and the hero badge): mark the finished milestone done and move
-the "in progress" marker to the next one. The page can't fetch live milestone
-status itself (the repo is private, and GitHub's milestones API needs auth a
-public static page can't hold), so this has to be a manual step done at the
-same time as the issue breakdown above.
+Only the current milestone has issues filed against it (exception: a
+long-lived `[Decision]` issue may be filed early against a future milestone
+to track an open question — that doesn't make that milestone "current").
+When its issues are all closed, break down the next milestone from
+[ROADMAP.md](ROADMAP.md) into issues before starting work on it — don't
+assume someone else has already done this. The landing page's roadmap status
+updates itself from the GitHub milestones API (see "Project website" above),
+so no doc edit is needed for that step anymore — just file the issues.
