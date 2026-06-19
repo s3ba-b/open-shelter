@@ -7,8 +7,8 @@ organizations (animals, intake, adoptions, fostering, medical scheduling), built
 on .NET 10 / .NET Aspire to demonstrate distributed-systems architecture and
 multi-tenant data isolation. The milestone breakdown lives in
 [ROADMAP.md](ROADMAP.md) in this repo. Full objectives, success measures,
-constraints, and licensing rationale live in the project charter this repo was
-bootstrapped from (kept in the `project-ideas` idea-backlog repo, not here).
+constraints, and licensing rationale live in the project charter
+([CHARTER.md](CHARTER.md)) in this repo.
 
 ## Stack
 
@@ -17,6 +17,10 @@ bootstrapped from (kept in the `project-ideas` idea-backlog repo, not here).
   OpenTelemetry/health/resilience wiring used by every service.
 - PostgreSQL, Redis, and a message broker (RabbitMQ / Azure Service Bus) as
   Aspire-orchestrated backing resources (added as services land).
+- A staff-facing frontend is now in scope: a Blazor web app (`src/OpenShelter.Web`,
+  .NET 10, Aspire-orchestrated) is planned as milestone M3 in [ROADMAP.md](ROADMAP.md).
+  Don't treat the frontend as out of scope — only the public-facing adopter portal
+  and mobile apps remain excluded.
 - Docker Compose is the primary deployment target; Azure Container Apps (`azd`)
   is an optional, documented secondary path.
 
