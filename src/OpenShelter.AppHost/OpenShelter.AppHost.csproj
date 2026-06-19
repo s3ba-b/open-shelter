@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OpenShelter.Animals.Api\OpenShelter.Animals.Api.csproj" />
     <ProjectReference Include="..\OpenShelter.Gateway\OpenShelter.Gateway.csproj" />
   </ItemGroup>
 
