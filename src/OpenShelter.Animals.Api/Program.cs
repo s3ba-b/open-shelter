@@ -62,3 +62,8 @@ static async Task SeedDemoTenantsAsync(IServiceProvider services)
 
     await db.SaveChangesAsync();
 }
+
+// Makes the top-level-statement Program class public so the isolation tests' (and any
+// future integration tests') WebApplicationFactory<Program> can boot the real DI-wired
+// host instead of a hand-rolled stand-in.
+public partial class Program;

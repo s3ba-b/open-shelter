@@ -7,5 +7,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/OpenShelter.Animals.Api.Tests/OpenShelter.Animals.Api.Tests.csproj" />
+    <Project Path="tests/OpenShelter.IsolationTests/OpenShelter.IsolationTests.csproj" />
   </Folder>
 </Solution>
