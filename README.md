@@ -42,21 +42,22 @@ Many small shelters and rescues run on spreadsheets and ad-hoc tools. Open Shelt
 ### Run locally
 
 ```bash
-# TODO: gateway and business services land later in the M0 milestone — this
-# currently starts the backing resources (PostgreSQL, Redis, RabbitMQ).
+# Starts the backing resources (PostgreSQL, Redis, RabbitMQ) plus the
+# animals-api and gateway services. More business services land in later
+# milestones.
 aspire run
 ```
 
 `aspire run` auto-detects the AppHost project in the repo and builds/runs it; no
 need to pass `--project`. If you don't have the Aspire CLI installed, `dotnet
 run --project src/OpenShelter.AppHost` works as a fallback. Open the Aspire
-dashboard link printed on startup to confirm all three resources report
+dashboard link printed on startup to confirm the resources and services report
 healthy.
 
 ## Architecture
 
 <!-- Add an architecture diagram and a short description as the project takes shape. -->
-_TODO: architecture diagram + overview (lands with the M0 walking skeleton)._
+_TODO: architecture diagram + overview._
 
 ## Deployment
 
