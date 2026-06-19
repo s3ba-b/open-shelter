@@ -3,7 +3,7 @@
 Open Shelter is delivered **iteratively-incrementally**: each milestone is a working, demoable slice of the system — API → service → data → tests — rather than a horizontal layer built in isolation. Milestones are defined by *working software*, not calendar dates, and are ordered by dependency.
 
 - **Walking skeleton first** (M0). Tenant isolation is a cross-cutting concern, so the architectural spine — Aspire orchestration, tenant resolution, data-layer isolation — is built before any business feature. Every later feature is tenant-scoped from birth instead of being retrofitted.
-- **Vertical slices** (M2–M4). Each domain area is built end-to-end as a self-contained increment, tenant-scoped and isolation-tested as it lands.
+- **Vertical slices** (M2, M4, M5). Each domain area is built end-to-end as a self-contained increment, tenant-scoped and isolation-tested as it lands. The staff web application (M3) is born right after the first slice and then grows with each later slice.
 - **Isolation as a continuous gate.** The cross-tenant isolation test suite grows with every increment and runs in CI; a failing isolation test blocks a milestone from being considered done.
 
 ## Milestones
@@ -13,9 +13,10 @@ Open Shelter is delivered **iteratively-incrementally**: each milestone is a wor
 | **M0 — Walking skeleton** | Aspire AppHost orchestrates a gateway + one business service + PostgreSQL/Redis/broker, all healthy in the dashboard. `ITenantContext` resolution and EF Core global query filters are wired, and the first automated cross-tenant isolation test passes. |
 | **M1 — Identity & access** | Token-based auth with tenant claims; roles within an organization (admin, staff, volunteer); isolation enforced through the auth pipeline. |
 | **M2 — Animals (first vertical slice)** | Animal records, intake history, and status tracking working end-to-end (API → service → data), fully tenant-scoped, with isolation tests covering the new entities. |
-| **M3 — Adoption & fostering** | Adoption applications + approval flow and foster placements, end-to-end and tenant-scoped. |
-| **M4 — Medical scheduling & background worker** | Vaccination/treatment schedules with due dates; the worker service generates reminders, adoption follow-ups, and per-tenant reporting; OpenTelemetry spans tagged by tenant are visible in the dashboard. |
-| **M5 — Hardening & release** | Full isolation suite green in CI as a release gate; Docker Compose deployment with documentation; architecture diagram and README; optional Azure deployment documented. |
+| **M3 — Staff web application** | A Blazor staff-facing web app (`src/OpenShelter.Web`), orchestrated by the Aspire AppHost and built on ServiceDefaults, authenticating through the M1 identity/tenant pipeline. The app shell — sign-in, tenant-aware navigation, layout — is established, and the **Animals** experience (records, intake history, status) works end-to-end against the live Gateway API. Strictly tenant-scoped: a signed-in user only ever sees their own organization's data, guaranteed by the existing data-layer filters. Later domain milestones extend this same app. |
+| **M4 — Adoption & fostering** | Adoption applications + approval flow and foster placements, end-to-end and tenant-scoped, with the corresponding staff-UI screens added to the web app. |
+| **M5 — Medical scheduling & background worker** | Vaccination/treatment schedules with due dates, and their staff-UI screens in the web app; the worker service generates reminders, adoption follow-ups, and per-tenant reporting; OpenTelemetry spans tagged by tenant are visible in the dashboard. |
+| **M6 — Hardening & release** | Full isolation suite green in CI as a release gate; Docker Compose deployment with documentation; architecture diagram and README; optional Azure deployment documented. |
 
 Each milestone above also exists as a [GitHub milestone](https://github.com/s3ba-b/open-shelter/milestones) with this same definition of done.
 
@@ -32,4 +33,4 @@ This is the same process used to break down M0 into its initial five issues.
 
 ## Out of scope (this version)
 
-Payment processing, public-facing adopter portals, and mobile apps are explicitly out of scope. See the project charter's constraints for the full list and rationale.
+Payment processing, public-facing adopter portals, and mobile apps are explicitly out of scope. The internal **staff-facing web UI is now in scope (M3)** — it is distinct from the excluded public-facing adopter portal. See the project charter's constraints ([CHARTER.md](CHARTER.md)) for the full list and rationale.
