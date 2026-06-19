@@ -3,21 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open Shelter (OSMP) — Multi-Tenant Animal Shelter & Rescue Management Platform</title>
+<title data-i18n="meta.title">Open Shelter (OSMP) — Multi-Tenant Animal Shelter & Rescue Management Platform</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<div class="lang-toggle" role="group" aria-label="Language / Język">
+  <button type="button" data-lang="en" class="active" lang="en">EN</button>
+  <button type="button" data-lang="pl" lang="pl">PL</button>
+</div>
+
 <header class="hero">
   <div class="container">
-    <span class="badge">In active development · M0 walking skeleton</span>
+    <span class="badge" data-i18n="hero.badge">In active development · M0 walking skeleton</span>
     <h1>Open Shelter <span class="acronym">(OSMP)</span></h1>
-    <p class="tagline">A free tool that helps animal shelters and rescues keep track of their animals,
+    <p class="tagline" data-i18n="hero.tagline">A free tool that helps animal shelters and rescues keep track of their animals,
       adoptions, foster homes, and vet appointments — so they can stop juggling spreadsheets, without
       paying for software they can't afford.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="https://github.com/s3ba-b/open-shelter">View on GitHub</a>
-      <a class="btn btn-secondary" href="#features">See what it does</a>
+      <a class="btn btn-primary" href="https://github.com/s3ba-b/open-shelter" data-i18n="hero.cta1">View on GitHub</a>
+      <a class="btn btn-secondary" href="#features" data-i18n="hero.cta2">See what it does</a>
     </div>
   </div>
 </header>
@@ -26,8 +31,8 @@
 
   <section class="section">
     <div class="container">
-      <h2>Why this exists</h2>
-      <p class="lead">Most small shelters and rescues get by on spreadsheets and a patchwork of free
+      <h2 data-i18n="why.h2">Why this exists</h2>
+      <p class="lead" data-i18n="why.lead">Most small shelters and rescues get by on spreadsheets and a patchwork of free
         tools, because the professional shelter software costs more than their budget allows. Open Shelter
         gives them a proper system for free — one they can run themselves, and that's licensed so it can
         never be locked away and turned into yet another paid product they can't access.</p>
@@ -36,48 +41,101 @@
 
   <section class="section alt" id="features">
     <div class="container">
-      <h2>What it does</h2>
+      <h2 data-i18n="features.h2">What it does</h2>
       <div class="grid">
         <div class="card">
-          <h3>Private to each shelter</h3>
-          <p>Many shelters can share one installation, but each one only ever sees its own animals,
+          <h3 data-i18n="card1.t">Private to each shelter</h3>
+          <p data-i18n="card1.d">Many shelters can share one installation, but each one only ever sees its own animals,
             people, and records. That separation is built deep into the system — not just hidden on
             the screen.</p>
         </div>
         <div class="card">
-          <h3>Animal records</h3>
-          <p>Keep a record for every animal — where it came from, and whether it's available, in a
+          <h3 data-i18n="card2.t">Animal records</h3>
+          <p data-i18n="card2.d">Keep a record for every animal — where it came from, and whether it's available, in a
             foster home, adopted, or on a medical hold.</p>
         </div>
         <div class="card">
-          <h3>Adoptions</h3>
-          <p>Take in adoption applications, keep applicant details, and follow each one from first
+          <h3 data-i18n="card3.t">Adoptions</h3>
+          <p data-i18n="card3.d">Take in adoption applications, keep applicant details, and follow each one from first
             enquiry through to a completed adoption.</p>
         </div>
         <div class="card">
-          <h3>Foster homes</h3>
-          <p>Track which animals are placed in foster care and the volunteers caring for them, from
+          <h3 data-i18n="card4.t">Foster homes</h3>
+          <p data-i18n="card4.d">Track which animals are placed in foster care and the volunteers caring for them, from
             drop-off to return.</p>
         </div>
         <div class="card">
-          <h3>Vet &amp; medical reminders</h3>
-          <p>Keep vaccination and treatment schedules with due dates, and get a reminder before each
+          <h3 data-i18n="card5.t">Vet &amp; medical reminders</h3>
+          <p data-i18n="card5.d">Keep vaccination and treatment schedules with due dates, and get a reminder before each
             one is due.</p>
         </div>
         <div class="card">
-          <h3>Accounts &amp; roles</h3>
-          <p>Staff, volunteers, and admins each sign in with the right level of access for their job —
+          <h3 data-i18n="card6.t">Accounts &amp; roles</h3>
+          <p data-i18n="card6.d">Staff, volunteers, and admins each sign in with the right level of access for their job —
             so people only see and change what they should.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="architecture">
+  <section class="section" id="preview">
     <div class="container">
-      <span class="badge">For developers</span>
-      <h2>Built to demonstrate, not just to work</h2>
-      <p class="lead">Open Shelter also serves as a reference implementation of cloud-native,
+      <span class="badge" data-i18n="preview.badge">Design preview · M3 in development</span>
+      <h2 data-i18n="preview.h2">A look at the staff app</h2>
+      <p class="lead" data-i18n="preview.lead">Here's the direction for the screen shelter staff and volunteers will use day to
+        day. These are early design mock-ups with sample data — the staff app itself is still being
+        built (milestone M3), so what you see here isn't live yet.</p>
+      <div class="shots">
+        <figure class="shot">
+          <a class="shot-link" href="images/preview/full/index.png" target="_blank" rel="noopener">
+            <picture>
+              <source srcset="images/preview/index.webp" type="image/webp">
+              <img src="images/preview/index.png" width="1280" height="800"
+                   alt="Overview dashboard showing animals in care, open applications, recent intakes and medical-due counts for a single shelter." loading="lazy">
+            </picture>
+          </a>
+          <figcaption><strong data-i18n="preview.index.t">Overview dashboard</strong><span data-i18n="preview.index.d">The day's numbers at a glance — animals in care, applications, foster placements, and what's medically due.</span><br><a class="shot-full" href="images/preview/full/index.png" target="_blank" rel="noopener" data-i18n="preview.viewfull">View full screen ↗</a></figcaption>
+        </figure>
+        <figure class="shot">
+          <a class="shot-link" href="images/preview/full/animals.png" target="_blank" rel="noopener">
+            <picture>
+              <source srcset="images/preview/animals.webp" type="image/webp">
+              <img src="images/preview/animals.png" width="1280" height="800"
+                   alt="Animals list: a filterable table of animals with species, intake date, status and how long each has been in care." loading="lazy">
+            </picture>
+          </a>
+          <figcaption><strong data-i18n="preview.animals.t">Animals list</strong><span data-i18n="preview.animals.d">Every animal in one filterable list, with status, location, and days in care.</span><br><a class="shot-full" href="images/preview/full/animals.png" target="_blank" rel="noopener" data-i18n="preview.viewfull">View full screen ↗</a></figcaption>
+        </figure>
+        <figure class="shot">
+          <a class="shot-link" href="images/preview/full/animal.png" target="_blank" rel="noopener">
+            <picture>
+              <source srcset="images/preview/animal.webp" type="image/webp">
+              <img src="images/preview/animal.png" width="1280" height="800"
+                   alt="A single animal's record showing profile details, an intake and status history timeline, and an upcoming medical schedule." loading="lazy">
+            </picture>
+          </a>
+          <figcaption><strong data-i18n="preview.animal.t">Animal record</strong><span data-i18n="preview.animal.d">One animal's full story — profile, a history of every status change, and upcoming vet care.</span><br><a class="shot-full" href="images/preview/full/animal.png" target="_blank" rel="noopener" data-i18n="preview.viewfull">View full screen ↗</a></figcaption>
+        </figure>
+        <figure class="shot">
+          <a class="shot-link" href="images/preview/full/login.png" target="_blank" rel="noopener">
+            <picture>
+              <source srcset="images/preview/login.webp" type="image/webp">
+              <img src="images/preview/login.png" width="1280" height="800"
+                   alt="Sign-in screen where staff enter their organization's workspace, reinforcing that each shelter's data is kept separate." loading="lazy">
+            </picture>
+          </a>
+          <figcaption><strong data-i18n="preview.login.t">Sign in to your workspace</strong><span data-i18n="preview.login.d">Each shelter signs in to its own private space — the separation built into the system, shown on screen.</span><br><a class="shot-full" href="images/preview/full/login.png" target="_blank" rel="noopener" data-i18n="preview.viewfull">View full screen ↗</a></figcaption>
+        </figure>
+      </div>
+      <p class="preview-note" data-i18n="preview.note">Mock-ups are a non-binding design reference; the finished app may differ.</p>
+    </div>
+  </section>
+
+  <section class="section alt" id="architecture">
+    <div class="container">
+      <span class="badge" data-i18n="arch.badge">For developers</span>
+      <h2 data-i18n="arch.h2">Built to demonstrate, not just to work</h2>
+      <p class="lead" data-i18n="arch.lead">Open Shelter also serves as a reference implementation of cloud-native,
         multi-tenant architecture on .NET. If you're not a developer, feel free to skip this part —
         none of it changes what the tool does for your shelter.</p>
       <div class="stack-row">
@@ -88,43 +146,43 @@
         <span class="pill">RabbitMQ</span>
         <span class="pill">OpenTelemetry</span>
         <span class="pill">Docker Compose</span>
-        <span class="pill">Azure Container Apps (optional)</span>
+        <span class="pill" data-i18n="arch.pill.azure">Azure Container Apps (optional)</span>
       </div>
       <ul class="bullet-list">
-        <li><strong>Aspire-orchestrated services</strong> — gateway, identity, business services, and a
+        <li><strong data-i18n="arch.b1.t">Aspire-orchestrated services</strong> <span data-i18n="arch.b1.d">— gateway, identity, business services, and a
           background worker, with all backing resources wired through the AppHost and visible in the
-          Aspire dashboard.</li>
-        <li><strong>Tenant-aware observability</strong> — OpenTelemetry spans tagged by tenant, so tracing
-          stays meaningful in a multi-tenant system.</li>
-        <li><strong>Isolation as a release gate</strong> — an automated cross-tenant test suite covers
-          every tenant-scoped entity and endpoint; a failing isolation test blocks a release.</li>
-        <li><strong>Cloud-agnostic by default</strong> — primary deployment is Docker Compose, runnable on
-          free/local infrastructure, with Azure Container Apps documented as an optional path.</li>
+          Aspire dashboard.</span></li>
+        <li><strong data-i18n="arch.b2.t">Tenant-aware observability</strong> <span data-i18n="arch.b2.d">— OpenTelemetry spans tagged by tenant, so tracing
+          stays meaningful in a multi-tenant system.</span></li>
+        <li><strong data-i18n="arch.b3.t">Isolation as a release gate</strong> <span data-i18n="arch.b3.d">— an automated cross-tenant test suite covers
+          every tenant-scoped entity and endpoint; a failing isolation test blocks a release.</span></li>
+        <li><strong data-i18n="arch.b4.t">Cloud-agnostic by default</strong> <span data-i18n="arch.b4.d">— primary deployment is Docker Compose, runnable on
+          free/local infrastructure, with Azure Container Apps documented as an optional path.</span></li>
       </ul>
     </div>
   </section>
 
-  <section class="section alt" id="roadmap">
+  <section class="section" id="roadmap">
     <div class="container">
-      <h2>Roadmap</h2>
-      <p class="lead">Built in steps, where each step is something that actually works and you can
+      <h2 data-i18n="roadmap.h2">Roadmap</h2>
+      <p class="lead" data-i18n="roadmap.lead">Built in steps, where each step is something that actually works and you can
         try — not a half-finished layer.</p>
       <ol class="roadmap">
-        <li><strong>M0 — Walking skeleton</strong><span>The foundations: the system runs end to end, and the data-privacy safeguard is proven by an automated test. <em>In progress.</em></span></li>
-        <li><strong>M1 — Identity &amp; access</strong><span>Secure sign-in, with the right level of access for each person and shelter.</span></li>
-        <li><strong>M2 — Animals</strong><span>The first complete feature, start to finish: animal records, intake, and status.</span></li>
-        <li><strong>M3 — A screen for staff</strong><span>An easy-to-use website where shelter staff and volunteers sign in and manage their animals, day to day.</span></li>
-        <li><strong>M4 — Adoption &amp; fostering</strong><span>Adoption applications, approvals, and foster placements.</span></li>
-        <li><strong>M5 — Medical scheduling &amp; background worker</strong><span>Automatic reminders for vaccinations and treatments before they're due.</span></li>
-        <li><strong>M6 — Hardening &amp; release</strong><span>Final safety checks, simple self-hosting, and an architecture overview.</span></li>
+        <li><strong data-i18n="roadmap.m0.t">M0 — Walking skeleton</strong><span data-i18n="roadmap.m0.d">The foundations: the system runs end to end, and the data-privacy safeguard is proven by an automated test. </span><em data-i18n="roadmap.m0.status">In progress.</em></li>
+        <li><strong data-i18n="roadmap.m1.t">M1 — Identity &amp; access</strong><span data-i18n="roadmap.m1.d">Secure sign-in, with the right level of access for each person and shelter.</span></li>
+        <li><strong data-i18n="roadmap.m2.t">M2 — Animals</strong><span data-i18n="roadmap.m2.d">The first complete feature, start to finish: animal records, intake, and status.</span></li>
+        <li><strong data-i18n="roadmap.m3.t">M3 — A screen for staff</strong><span data-i18n="roadmap.m3.d">An easy-to-use website where shelter staff and volunteers sign in and manage their animals, day to day.</span></li>
+        <li><strong data-i18n="roadmap.m4.t">M4 — Adoption &amp; fostering</strong><span data-i18n="roadmap.m4.d">Adoption applications, approvals, and foster placements.</span></li>
+        <li><strong data-i18n="roadmap.m5.t">M5 — Medical scheduling &amp; background worker</strong><span data-i18n="roadmap.m5.d">Automatic reminders for vaccinations and treatments before they're due.</span></li>
+        <li><strong data-i18n="roadmap.m6.t">M6 — Hardening &amp; release</strong><span data-i18n="roadmap.m6.d">Final safety checks, simple self-hosting, and an architecture overview.</span></li>
       </ol>
     </div>
   </section>
 
-  <section class="section" id="license">
+  <section class="section alt" id="license">
     <div class="container">
-      <h2>License: built to stay open</h2>
-      <p class="lead">Open Shelter is free and open source under the <strong>AGPL-3.0</strong> license.
+      <h2 data-i18n="license.h2">License: built to stay open</h2>
+      <p class="lead" data-i18n="license.lead" data-i18n-html>Open Shelter is free and open source under the <strong>AGPL-3.0</strong> license.
         Anyone can run it, change it, even charge to host it for others — but if you offer it as a service,
         you have to share your version of the code too. In plain terms: every improvement has to come back
         to the community, so the project can't be quietly taken private, closed off, and sold back to the
@@ -132,10 +190,10 @@
     </div>
   </section>
 
-  <section class="section alt cta-section">
+  <section class="section cta-section">
     <div class="container">
-      <h2>Follow along or get involved</h2>
-      <p class="lead">The project is in its first milestone. Issues, architecture notes, and progress
+      <h2 data-i18n="cta.h2">Follow along or get involved</h2>
+      <p class="lead" data-i18n="cta.lead">The project is in its first milestone. Issues, architecture notes, and progress
         are tracked openly on GitHub.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://github.com/s3ba-b/open-shelter">github.com/s3ba-b/open-shelter</a>
@@ -147,9 +205,88 @@
 
 <footer>
   <div class="container">
-    <p>Open Shelter (OSMP) — an open-source project. Licensed AGPL-3.0.</p>
+    <p data-i18n="footer.text">Open Shelter (OSMP) — an open-source project. Licensed AGPL-3.0.</p>
   </div>
 </footer>
+
+<script src="translations.js"></script>
+<script>
+// Language toggle (EN/PL). Progressive enhancement: English ships in the HTML,
+// so with JS off the page is a complete English page. translations.js provides
+// window.OS_I18N = { en: {...}, pl: {...} }.
+(function () {
+  var dict = window.OS_I18N || {};
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('.lang-toggle button'));
+
+  function apply(lang) {
+    var t = dict[lang];
+    if (!t) lang = 'en', t = dict.en || {};
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var val = t[el.getAttribute('data-i18n')];
+      if (val == null) return;
+      if (el.hasAttribute('data-i18n-html')) el.innerHTML = val;
+      else el.textContent = val;
+    });
+    buttons.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+    try { localStorage.setItem('os-lang', lang); } catch (e) {}
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () { apply(b.getAttribute('data-lang')); });
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem('os-lang'); } catch (e) {}
+  var initial = saved || ((navigator.language || '').toLowerCase().indexOf('pl') === 0 ? 'pl' : 'en');
+  apply(initial);
+})();
+</script>
+<script>
+// Lightbox for the design-preview gallery. Progressive enhancement:
+// the gallery links keep their href/target, so with JS off they open the
+// full screenshot in a new tab; with JS on we show it in an overlay instead.
+(function () {
+  var lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.setAttribute('role', 'dialog');
+  lb.setAttribute('aria-modal', 'true');
+  lb.innerHTML = '<a href="#" class="lightbox-close" aria-label="Close">×</a><img alt="">';
+  document.body.appendChild(lb);
+
+  var img = lb.querySelector('img');
+  var closeBtn = lb.querySelector('.lightbox-close');
+
+  function open(src, alt) {
+    img.src = src;
+    img.alt = alt || '';
+    lb.classList.add('open');
+    document.body.classList.add('lb-lock');
+  }
+  function close() {
+    lb.classList.remove('open');
+    document.body.classList.remove('lb-lock');
+    img.src = '';
+  }
+
+  document.querySelectorAll('a.shot-link, a.shot-full').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var fig = a.closest('figure');
+      var thumb = fig ? fig.querySelector('img') : null;
+      open(a.getAttribute('href'), thumb ? thumb.alt : '');
+    });
+  });
+
+  lb.addEventListener('click', function (e) {
+    if (e.target === lb || e.target === closeBtn) { e.preventDefault(); close(); }
+  });
+  img.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lb.classList.contains('open')) close();
+  });
+})();
+</script>
 
 </body>
 </html>
