@@ -53,7 +53,12 @@ reference. Follow "simple first, technical second": the upper sections (hero,
 language with no jargon; technical terms (Aspire, EF Core, OpenTelemetry,
 multi-tenancy, OpenTelemetry spans, etc.) stay confined to the architecture
 section, which is explicitly marked "For developers" and flagged as skippable.
-Page language is English.
+Page language is English by default, with an optional Polish translation: an
+in-page EN/PL toggle (top-right) swaps copy via a `docs/translations.js`
+dictionary and remembers the choice. English ships in the HTML (so no-JS
+visitors and crawlers get a complete page) and Polish is applied on top — keep
+both languages at key parity when editing copy. The mock-up screenshots stay
+English regardless of the toggle.
 
 ## Licensing
 
