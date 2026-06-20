@@ -77,8 +77,9 @@ window.OS_I18N = {
     "license.h2": "License: built to stay open",
     "license.lead": "Open Shelter is free and open source under the <strong>AGPL-3.0</strong> license. Anyone can run it, change it, even charge to host it for others — but if you offer it as a service, you have to share your version of the code too. In plain terms: every improvement has to come back to the community, so the project can't be quietly taken private, closed off, and sold back to the shelters it was built for.",
 
-    "cta.h2": "Follow along or get involved",
-    "cta.lead": "The project is in active development. Issues, architecture notes, and progress are tracked openly on GitHub.",
+    "cta.h2": "Follow along — or lend a hand",
+    "cta.lead": "The project is in active development, and you don't have to be a developer to help. Share how a real shelter works, improve the Polish or English wording, or just tell us what's missing — every issue, idea, and update lives openly on GitHub.",
+    "cta.btn2": "Share an idea →",
 
     "footer.text": "Open Shelter (OSMP) — an open-source project. Licensed AGPL-3.0."
   },
@@ -158,8 +159,9 @@ window.OS_I18N = {
     "license.h2": "Licencja: stworzona, by pozostać otwarta",
     "license.lead": "Open Shelter jest darmowe i otwartoźródłowe na licencji <strong>AGPL-3.0</strong>. Każdy może je uruchamiać, zmieniać, a nawet pobierać opłaty za hostowanie go dla innych — ale jeśli udostępniasz je jako usługę, musisz udostępnić również swoją wersję kodu. Mówiąc wprost: każde ulepszenie musi wrócić do społeczności, więc projektu nie da się po cichu zamknąć, odciąć i odsprzedać schroniskom, dla których powstał.",
 
-    "cta.h2": "Śledź projekt lub dołącz",
-    "cta.lead": "Projekt jest w aktywnym rozwoju. Zgłoszenia, notatki o architekturze i postępy są jawnie śledzone na GitHubie.",
+    "cta.h2": "Śledź projekt — albo pomóż",
+    "cta.lead": "Projekt jest w aktywnym rozwoju, a żeby pomóc, wcale nie trzeba umieć programować. Opowiedz, jak naprawdę działa schronisko, popraw polskie lub angielskie teksty albo po prostu napisz, czego brakuje — wszystkie zgłoszenia, pomysły i postępy są jawne na GitHubie.",
+    "cta.btn2": "Podziel się pomysłem →",
 
     "footer.text": "Open Shelter (OSMP) — projekt open source. Licencja AGPL-3.0."
   }
