@@ -3,6 +3,7 @@
     <Project Path="src/OpenShelter.Animals.Api/OpenShelter.Animals.Api.csproj" />
     <Project Path="src/OpenShelter.AppHost/OpenShelter.AppHost.csproj" />
     <Project Path="src/OpenShelter.Gateway/OpenShelter.Gateway.csproj" />
+    <Project Path="src/OpenShelter.Identity.Api/OpenShelter.Identity.Api.csproj" />
     <Project Path="src/OpenShelter.ServiceDefaults/OpenShelter.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/tests/">
