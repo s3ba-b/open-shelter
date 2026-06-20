@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Aspire.Npgsql gives connection-string resolution + a health check for the
+      "identitydb" resource. No EF Core / DbContext yet — there's no data model
+      until the next issue adds Organization/User entities.
+    -->
+    <PackageReference Include="Aspire.Npgsql" Version="13.4.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpenShelter.ServiceDefaults\OpenShelter.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>
