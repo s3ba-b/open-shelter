@@ -9,10 +9,19 @@
   <ItemGroup>
     <!--
       Aspire.Npgsql gives connection-string resolution + a health check for the
-      "identitydb" resource. No EF Core / DbContext yet — there's no data model
-      until the next issue adds Organization/User entities.
+      "identitydb" resource. Npgsql.EntityFrameworkCore.PostgreSQL is added directly
+      (not the Aspire.Npgsql.EntityFrameworkCore.PostgreSQL wrapper) because that wrapper's
+      AddNpgsqlDbContext always pools contexts via AddDbContextPool, and a pooled context
+      with a constructor-injected scoped ITenantContext would let one request's tenant
+      leak into a reused context from a later request. AddDbContext below is unpooled,
+      so EF Core resolves ITenantContext from the correct per-request scope every time.
     -->
     <PackageReference Include="Aspire.Npgsql" Version="13.4.5" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

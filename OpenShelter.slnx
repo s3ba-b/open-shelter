@@ -8,6 +8,8 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/OpenShelter.Animals.Api.Tests/OpenShelter.Animals.Api.Tests.csproj" />
+    <Project Path="tests/OpenShelter.Identity.Api.IsolationTests/OpenShelter.Identity.Api.IsolationTests.csproj" />
+    <Project Path="tests/OpenShelter.Identity.Api.Tests/OpenShelter.Identity.Api.Tests.csproj" />
     <Project Path="tests/OpenShelter.IsolationTests/OpenShelter.IsolationTests.csproj" />
   </Folder>
 </Solution>
