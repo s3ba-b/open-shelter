@@ -1,6 +1,15 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using OpenShelter.Animals.Api.Auth;
 using OpenShelter.Animals.Api.Tenancy;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -9,9 +18,11 @@ namespace OpenShelter.IsolationTests;
 
 /// <summary>
 /// Drives the real Animals API host (Program.cs, unchanged) over HTTP against a real
-/// Postgres container, asserting that a request resolved to one tenant never sees another
-/// tenant's rows. See CHARTER.md's cross-tenant risk mitigation for why this goes through
-/// the actual DI-wired host rather than constructing AnimalsDbContext directly.
+/// Postgres container, asserting that a request authenticated as one tenant never sees
+/// another tenant's rows. The tenant now comes from the validated <c>tenant_id</c> claim of a
+/// JWT bearer token (replacing the M0 <c>X-Tenant-Id</c> header), so the tests mint tokens
+/// signed with the host's own configured key. See CHARTER.md's cross-tenant risk mitigation
+/// for why this goes through the actual DI-wired host rather than constructing the DbContext.
 /// </summary>
 public sealed class CrossTenantIsolationTests : IAsyncLifetime
 {
@@ -67,15 +78,65 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         Assert.DoesNotContain(riversideAnimals, a => a.Name == "Buddy");
     }
 
-    private static async Task<AnimalDto[]> GetAnimalsAsync(HttpClient client, Guid tenantId)
+    [Fact]
+    public async Task RequestWithoutToken_IsRejected()
+    {
+        using var client = _factory.CreateClient();
+
+        using var response = await client.GetAsync("/");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RequestFromVolunteer_IsForbidden()
+    {
+        using var client = _factory.CreateClient();
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer", IssueToken(DemoTenants.Northside, "Volunteer"));
+
+        using var response = await client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    private async Task<AnimalDto[]> GetAnimalsAsync(HttpClient client, Guid tenantId)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "/");
-        request.Headers.Add(HeaderTenantContext.HeaderName, tenantId.ToString());
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer", IssueToken(tenantId, TokenAuth.AdminRole));
 
         using var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<AnimalDto[]>() ?? [];
+    }
+
+    // Mints a token signed with the host's own configured key/issuer/audience, so it validates
+    // through the exact same TokenValidationParameters the API uses — the auth-pipeline analogue
+    // of LoginEndpointTests reading the key back to verify an issued token.
+    private string IssueToken(Guid tenantId, string role)
+    {
+        var jwt = _factory.Services.GetRequiredService<IOptions<JwtOptions>>().Value;
+
+        var credentials = new SigningCredentials(
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+            SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: jwt.Issuer,
+            audience: jwt.Audience,
+            claims: new[]
+            {
+                new Claim(TokenAuth.TenantIdClaim, tenantId.ToString()),
+                new Claim(TokenAuth.RoleClaim, role),
+            },
+            expires: DateTime.UtcNow.AddMinutes(5),
+            signingCredentials: credentials);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private sealed record AnimalDto(Guid Id, string Name);
