@@ -77,6 +77,17 @@ window.OS_I18N = {
     "license.h2": "License: built to stay open",
     "license.lead": "Open Shelter is free and open source under the <strong>AGPL-3.0</strong> license. Anyone can run it, change it, even charge to host it for others — but if you offer it as a service, you have to share your version of the code too. In plain terms: every improvement has to come back to the community, so the project can't be quietly taken private, closed off, and sold back to the shelters it was built for.",
 
+    "get.h2": "How to get it",
+    "get.lead": "Open Shelter is software we publish, not a service we run. There's nothing to sign up for here — you have a few ways to use it, depending on whether you want to host it yourself.",
+    "get.demoBtn": "Try the demo · soon",
+    "get.demoNote": "The demo isn't live yet — it goes online after the final milestone (M6 — Hardening & release).",
+    "get.card1.t": "Try the demo",
+    "get.card1.d": "Look around a live demo with sample data to see how it works. It's for exploring only — it isn't your shelter's real data.",
+    "get.card2.t": "Run it yourself",
+    "get.card2.d": "It's free and open source, so you (or your IT person) can install it on your own server and run it for your shelter.",
+    "get.card3.t": "Have someone host it for you",
+    "get.card3.d": "Prefer not to manage servers? The license lets any provider host Open Shelter for shelters as a managed service. None offer this yet — but the door is open.",
+
     "cta.h2": "Follow along — or lend a hand",
     "cta.lead": "The project is in active development, and you don't have to be a developer to help. Share how a real shelter works, improve the Polish or English wording, or just tell us what's missing — every issue, idea, and update lives openly on GitHub.",
     "cta.btn2": "Share an idea →",
@@ -158,6 +169,17 @@ window.OS_I18N = {
 
     "license.h2": "Licencja: stworzona, by pozostać otwarta",
     "license.lead": "Open Shelter jest darmowe i otwartoźródłowe na licencji <strong>AGPL-3.0</strong>. Każdy może je uruchamiać, zmieniać, a nawet pobierać opłaty za hostowanie go dla innych — ale jeśli udostępniasz je jako usługę, musisz udostępnić również swoją wersję kodu. Mówiąc wprost: każde ulepszenie musi wrócić do społeczności, więc projektu nie da się po cichu zamknąć, odciąć i odsprzedać schroniskom, dla których powstał.",
+
+    "get.h2": "Jak z niego korzystać",
+    "get.lead": "Open Shelter to oprogramowanie, które udostępniamy, a nie usługa, którą prowadzimy. Nie ma tu żadnej rejestracji — masz kilka sposobów, by z niego korzystać, zależnie od tego, czy chcesz hostować je samodzielnie.",
+    "get.demoBtn": "Wypróbuj demo · wkrótce",
+    "get.demoNote": "Demo nie działa jeszcze na żywo — ruszy po ostatnim kamieniu milowym (M6 — Utwardzanie i wydanie).",
+    "get.card1.t": "Wypróbuj demo",
+    "get.card1.d": "Rozejrzyj się po działającym demie z przykładowymi danymi, żeby zobaczyć, jak to działa. Służy tylko do zapoznania się — to nie są prawdziwe dane Twojego schroniska.",
+    "get.card2.t": "Uruchom je samodzielnie",
+    "get.card2.d": "Jest darmowe i otwartoźródłowe, więc Ty (lub Twój informatyk) możesz zainstalować je na własnym serwerze i prowadzić dla swojego schroniska.",
+    "get.card3.t": "Niech ktoś uruchomi je za Ciebie",
+    "get.card3.d": "Nie chcesz zajmować się serwerami? Licencja pozwala, by dowolny usługodawca hostował Open Shelter dla schronisk jako usługę zarządzaną. Na razie nikt tego nie oferuje — ale droga jest otwarta.",
 
     "cta.h2": "Śledź projekt — albo pomóż",
     "cta.lead": "Projekt jest w aktywnym rozwoju, a żeby pomóc, wcale nie trzeba umieć programować. Opowiedz, jak naprawdę działa schronisko, popraw polskie lub angielskie teksty albo po prostu napisz, czego brakuje — wszystkie zgłoszenia, pomysły i postępy są jawne na GitHubie.",
