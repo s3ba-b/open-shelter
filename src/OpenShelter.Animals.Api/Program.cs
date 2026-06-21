@@ -1,8 +1,10 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using OpenShelter.Animals.Api;
 using OpenShelter.Animals.Api.Auth;
 using OpenShelter.Animals.Api.Data;
 using OpenShelter.Animals.Api.Tenancy;
@@ -10,6 +12,11 @@ using OpenShelter.Animals.Api.Tenancy;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+// Serialize the Species/Sex enums as their names ("Dog", "Female") rather than integers, so
+// the resource shape stays readable and decoupled from the enum's declaration order.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Connect to the PostgreSQL "openshelterdb" resource via Aspire service discovery,
 // registering an NpgsqlDataSource plus a health check that proves the connection.
@@ -72,14 +79,91 @@ app.UseAuthorization();
 // Trivial liveness/ping endpoint (anonymous), reachable through the gateway at /animals/ping.
 app.MapGet("/ping", () => Results.Ok(new { service = "animals-api", status = "ok" }));
 
-// Lists animals for the tenant resolved from the authenticated caller's token, demonstrating
-// that the EF Core global query filter scopes results without any explicit per-call filtering.
-// Restricted to admins and staff as a first example of role enforcement (volunteers get 403);
-// finer-grained policies arrive with the domain endpoints in later milestones. Reachable
-// through the gateway at /animals.
-app.MapGet("/", async (AnimalsDbContext db) =>
-    Results.Ok(await db.Animals.Select(a => new { a.Id, a.Name }).ToListAsync()))
-    .RequireAuthorization(TokenAuth.StaffOrAdminPolicy);
+// Tenant-scoped animal CRUD. Every route is restricted to admins and staff (volunteers get
+// 403), and every query rides the EF Core global query filter, so a caller only ever reads or
+// writes their own tenant's animals — no explicit per-call TenantId filtering. Reachable
+// through the gateway under /animals.
+var animals = app.MapGroup("").RequireAuthorization(TokenAuth.StaffOrAdminPolicy);
+
+// List the caller's animals.
+animals.MapGet("/", async (AnimalsDbContext db) =>
+{
+    var results = await db.Animals
+        .OrderBy(a => a.Name)
+        .Select(a => AnimalResponse.From(a))
+        .ToListAsync();
+
+    return Results.Ok(results);
+});
+
+// Fetch one animal by id. The query filter turns a cross-tenant id into a 404, exactly as if
+// the row did not exist — another tenant's animal is never distinguishable from a missing one.
+animals.MapGet("/{id:guid}", async (Guid id, AnimalsDbContext db) =>
+{
+    var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
+
+    return animal is null ? Results.NotFound() : Results.Ok(AnimalResponse.From(animal));
+});
+
+// Create an animal in the caller's tenant. TenantId comes from the resolved ITenantContext
+// (the token), never the request body, so a caller cannot plant a row in another tenant.
+animals.MapPost("/", async (CreateAnimalRequest request, AnimalsDbContext db, ITenantContext tenant) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Name))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            [nameof(request.Name)] = ["Name is required."],
+        });
+    }
+
+    var animal = new Animal
+    {
+        Id = Guid.NewGuid(),
+        TenantId = tenant.TenantId,
+        Name = request.Name,
+        Species = request.Species,
+        Breed = request.Breed,
+        Sex = request.Sex,
+        DateOfBirth = request.DateOfBirth,
+        Description = request.Description,
+    };
+
+    db.Animals.Add(animal);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/{animal.Id}", AnimalResponse.From(animal));
+});
+
+// Update an animal. The query filter scopes the lookup to the caller's tenant, so an attempt
+// to update another tenant's animal resolves to NotFound rather than mutating their data.
+animals.MapPut("/{id:guid}", async (Guid id, UpdateAnimalRequest request, AnimalsDbContext db) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Name))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            [nameof(request.Name)] = ["Name is required."],
+        });
+    }
+
+    var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
+    if (animal is null)
+    {
+        return Results.NotFound();
+    }
+
+    animal.Name = request.Name;
+    animal.Species = request.Species;
+    animal.Breed = request.Breed;
+    animal.Sex = request.Sex;
+    animal.DateOfBirth = request.DateOfBirth;
+    animal.Description = request.Description;
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok(AnimalResponse.From(animal));
+});
 
 app.Run();
 
@@ -99,8 +183,28 @@ static async Task SeedDemoTenantsAsync(IServiceProvider services)
     }
 
     db.Animals.AddRange(
-        new Animal { Id = Guid.NewGuid(), TenantId = DemoTenants.Northside, Name = "Buddy" },
-        new Animal { Id = Guid.NewGuid(), TenantId = DemoTenants.Riverside, Name = "Whiskers" });
+        new Animal
+        {
+            Id = Guid.NewGuid(),
+            TenantId = DemoTenants.Northside,
+            Name = "Buddy",
+            Species = AnimalSpecies.Dog,
+            Breed = "Labrador Retriever",
+            Sex = AnimalSex.Male,
+            DateOfBirth = new DateOnly(2021, 4, 12),
+            Description = "Friendly, house-trained; good with children.",
+        },
+        new Animal
+        {
+            Id = Guid.NewGuid(),
+            TenantId = DemoTenants.Riverside,
+            Name = "Whiskers",
+            Species = AnimalSpecies.Cat,
+            Breed = "Domestic Shorthair",
+            Sex = AnimalSex.Female,
+            DateOfBirth = new DateOnly(2022, 9, 1),
+            Description = "Shy at first; prefers a quiet home.",
+        });
 
     await db.SaveChangesAsync();
 }
