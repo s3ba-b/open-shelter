@@ -1,5 +1,9 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using OpenShelter.Animals.Api.Auth;
 using OpenShelter.Animals.Api.Data;
 using OpenShelter.Animals.Api.Tenancy;
 
@@ -20,9 +24,41 @@ builder.Services.AddDbContext<AnimalsDbContext>((sp, options) =>
 
 builder.Services.AddHttpContextAccessor();
 
-// M0 placeholder tenant resolution (header-based). M1 swaps this for resolution
-// from an authenticated tenant claim without touching ITenantContext consumers.
-builder.Services.AddScoped<ITenantContext, HeaderTenantContext>();
+// Validate the JWT bearer tokens issued by OpenShelter.Identity.Api against the same signing
+// key/issuer/audience (the "Jwt" section). Configure<JwtOptions> also exposes the values to
+// integration tests via IOptions; the local snapshot is what AddJwtBearer needs at startup.
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+    ?? throw new InvalidOperationException("Missing 'Jwt' configuration section.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        // Keep the custom claims ("role", "tenant_id") under their original names instead of
+        // remapping "role" to the long ClaimTypes.Role URI — matches how the tokens are issued,
+        // and RoleClaimType below points RequireRole at that same "role" claim.
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwtOptions.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
+            ValidateLifetime = true,
+            RoleClaimType = TokenAuth.RoleClaim,
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+    options.AddPolicy(TokenAuth.StaffOrAdminPolicy, policy =>
+        policy.RequireRole(TokenAuth.AdminRole, TokenAuth.StaffRole)));
+
+// Tenant resolution now comes from the authenticated token's tenant_id claim (replacing the
+// M0 X-Tenant-Id header). The ITenantContext contract and every query filter built on it are
+// unchanged — only the source of the tenant id moved.
+builder.Services.AddScoped<ITenantContext, ClaimsTenantContext>();
 
 var app = builder.Build();
 
@@ -30,14 +66,20 @@ app.MapDefaultEndpoints();
 
 await SeedDemoTenantsAsync(app.Services);
 
-// Trivial liveness/ping endpoint, reachable through the gateway at /animals/ping.
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Trivial liveness/ping endpoint (anonymous), reachable through the gateway at /animals/ping.
 app.MapGet("/ping", () => Results.Ok(new { service = "animals-api", status = "ok" }));
 
-// Lists animals for the tenant resolved from the X-Tenant-Id header, demonstrating
-// that the EF Core global query filter scopes results without any explicit
-// per-call filtering. Reachable through the gateway at /animals.
+// Lists animals for the tenant resolved from the authenticated caller's token, demonstrating
+// that the EF Core global query filter scopes results without any explicit per-call filtering.
+// Restricted to admins and staff as a first example of role enforcement (volunteers get 403);
+// finer-grained policies arrive with the domain endpoints in later milestones. Reachable
+// through the gateway at /animals.
 app.MapGet("/", async (AnimalsDbContext db) =>
-    Results.Ok(await db.Animals.Select(a => new { a.Id, a.Name }).ToListAsync()));
+    Results.Ok(await db.Animals.Select(a => new { a.Id, a.Name }).ToListAsync()))
+    .RequireAuthorization(TokenAuth.StaffOrAdminPolicy);
 
 app.Run();
 
