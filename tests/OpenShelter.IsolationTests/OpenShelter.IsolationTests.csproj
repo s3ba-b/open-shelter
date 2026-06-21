@@ -27,6 +27,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OpenShelter.Animals.Api\OpenShelter.Animals.Api.csproj" />
+    <!--
+      The auth-pipeline isolation test logs in against the real Identity API to obtain a genuine
+      JWT, so it needs that host too. Aliased as "identity" because both API assemblies expose a
+      global Program type; the alias keeps the Animals-only M0 test's WebApplicationFactory<Program>
+      unambiguous while the new test reaches Identity's host via identity::Program.
+    -->
+    <ProjectReference Include="..\..\src\OpenShelter.Identity.Api\OpenShelter.Identity.Api.csproj" Aliases="identity" />
   </ItemGroup>
 
 </Project>
