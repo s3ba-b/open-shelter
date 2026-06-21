@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using OpenShelter.Identity.Api.Auth;
 using OpenShelter.Identity.Api.Data;
 using OpenShelter.Identity.Api.Tenancy;
 
@@ -21,6 +22,11 @@ builder.Services.AddDbContext<IdentityDbContext>((sp, options) =>
 
 builder.Services.AddHttpContextAccessor();
 
+// Access-token settings (signing key, issuer, audience, lifetime) bound from the "Jwt"
+// section; JwtTokenIssuer mints the tokens the login endpoint returns.
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+builder.Services.AddSingleton<JwtTokenIssuer>();
+
 // M0/M1 placeholder tenant resolution (header-based), same as OpenShelter.Animals.Api.
 // The auth pipeline (next issue) swaps this for resolution from an authenticated tenant
 // claim without touching ITenantContext consumers.
@@ -34,6 +40,39 @@ await SeedDemoDataAsync(app.Services);
 
 // Trivial liveness/ping endpoint, reachable through the gateway at /identity/ping.
 app.MapGet("/ping", () => Results.Ok(new { service = "identity-api", status = "ok" }));
+
+// Trades credentials for a signed access token carrying the user's tenant and role.
+// Reachable through the gateway at /identity/login.
+app.MapPost("/login", async (
+    LoginRequest request,
+    DbContextOptions<IdentityDbContext> dbOptions,
+    JwtTokenIssuer tokenIssuer) =>
+{
+    // Login is pre-tenant: the caller proves who they are and the tenant comes from the
+    // matched user row, so this is the one lookup that must span all tenants. The request
+    // also carries no X-Tenant-Id header, so the scoped HeaderTenantContext can't resolve
+    // (it would throw) — hence a StaticTenantContext + IgnoreQueryFilters here, the same
+    // filter-bypass the startup seeding relies on, rather than injecting IdentityDbContext.
+    await using var db = new IdentityDbContext(dbOptions, new StaticTenantContext(Guid.Empty));
+
+    var user = await db.Users
+        .IgnoreQueryFilters()
+        .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+    if (user is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var passwordCheck = new PasswordHasher<User>()
+        .VerifyHashedPassword(user, user.PasswordHash, request.Password);
+    if (passwordCheck == PasswordVerificationResult.Failed)
+    {
+        return Results.Unauthorized();
+    }
+
+    return Results.Ok(new LoginResponse(tokenIssuer.IssueAccessToken(user)));
+});
 
 // Lists users for the tenant resolved from the X-Tenant-Id header, demonstrating that the
 // EF Core global query filter scopes results without any explicit per-call filtering.
