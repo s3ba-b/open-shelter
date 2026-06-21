@@ -18,6 +18,8 @@
     -->
     <PackageReference Include="Aspire.Npgsql" Version="13.4.5" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <!-- Mints/signs the JWT access tokens the login endpoint returns (JwtTokenIssuer). -->
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
