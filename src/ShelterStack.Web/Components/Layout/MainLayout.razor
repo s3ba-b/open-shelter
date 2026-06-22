@@ -1,23 +1,28 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
-<div class="page">
+<div class="app">
     <NavMenu />
 
-    <main>
-        <header class="top-bar">
-            <div class="org">
-                @* Tenant-aware: replaced with the signed-in user's organization once auth lands (#82). *@
-                <span class="org-name">Demo Shelter</span>
+    <div class="main">
+        <header class="topbar">
+            <div class="crumbs">
+                <b>@CurrentPageTitle</b>
             </div>
-            <div class="top-bar-actions">
-                @* Reserved for the EN/PL language toggle (#83) and the user/sign-out menu (#82). *@
+            <div class="search">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+                <input placeholder="Search animals, people, applications…" disabled />
             </div>
+            @* Notification bell + the EN/PL toggle (#83) and user/sign-out menu (#82) land here. *@
+            <button class="icon-btn" disabled>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+            </button>
         </header>
 
-        <article class="content">
+        <main class="content">
             @Body
-        </article>
-    </main>
+        </main>
+    </div>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -25,3 +30,12 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private string CurrentPageTitle =>
+        Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/') switch
+        {
+            "animals" => "Animals",
+            _ => "Overview",
+        };
+}

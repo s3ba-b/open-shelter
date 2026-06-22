@@ -21,6 +21,14 @@ constraints, and licensing rationale live in the project charter
   .NET 10, Aspire-orchestrated) is planned as milestone M3 in [ROADMAP.md](ROADMAP.md).
   Don't treat the frontend as out of scope — only the public-facing adopter portal
   and mobile apps remain excluded.
+- The Web app's UI has a non-binding design reference: static HTML/CSS mock-ups
+  (login, overview dashboard, animals list, animal detail, M4 adoptions preview)
+  live in the separate, private `s3ba-b/open-shelter-mockups` repo — clone it
+  (`gh repo clone s3ba-b/open-shelter-mockups`) and port its markup/`app.css`
+  design tokens (teal/green theme, sidebar with org switcher, nav groups, badges,
+  timeline, etc.) rather than inventing new styling. The landing page's "design
+  preview" gallery (`docs/images/preview/`) is sourced from screenshots of these
+  same mock-ups (see issue #28).
 - Docker Compose is the primary deployment target; Azure Container Apps (`azd`)
   is an optional, documented secondary path.
 
