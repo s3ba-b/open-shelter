@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShelterStack.Animals.Api.Data;
@@ -11,9 +12,11 @@ using ShelterStack.Animals.Api.Data;
 namespace ShelterStack.Animals.Api.Migrations
 {
     [DbContext(typeof(AnimalsDbContext))]
-    partial class AnimalsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260622150201_AddIntakeRecords")]
+    partial class AddIntakeRecords
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
