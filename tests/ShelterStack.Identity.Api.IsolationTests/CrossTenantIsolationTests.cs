@@ -32,14 +32,19 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         // ConfigureAppConfiguration on WithWebHostBuilder doesn't reliably layer over a
         // ConfigurationManager already populated by WebApplication.CreateBuilder for the
         // minimal hosting model.
-        Environment.SetEnvironmentVariable("ConnectionStrings__identitydb", _postgres.GetConnectionString());
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__identitydb",
+            _postgres.GetConnectionString()
+        );
 
         // Run as Production, not the WebApplicationFactory default of Development: ASP.NET
         // Core's DI scope-validation (on by default in Development) would turn a pooled-vs-
         // scoped DbContext regression into a startup crash, masking the actual failure mode —
         // a silent cross-tenant data leak — that this test exists to catch. Per CHARTER.md,
         // that crash isn't a safety net we get in Production, so the test shouldn't lean on it.
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b => b.UseEnvironment("Production"));
+        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
+            b.UseEnvironment("Production")
+        );
     }
 
     public async Task DisposeAsync()

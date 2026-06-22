@@ -39,7 +39,8 @@ public sealed class JwtTokenIssuer(IOptions<JwtOptions> options)
             claims: claims,
             notBefore: now,
             expires: now.AddMinutes(_options.AccessTokenLifetimeMinutes),
-            signingCredentials: credentials);
+            signingCredentials: credentials
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

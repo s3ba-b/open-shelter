@@ -12,8 +12,9 @@ public sealed class AnimalsDbContextFactory : IDesignTimeDbContextFactory<Animal
 {
     public AnimalsDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<AnimalsDbContext>()
-            .UseNpgsql("Host=localhost;Database=shelterstackdb;Username=design-time");
+        var optionsBuilder = new DbContextOptionsBuilder<AnimalsDbContext>().UseNpgsql(
+            "Host=localhost;Database=shelterstackdb;Username=design-time"
+        );
 
         return new AnimalsDbContext(optionsBuilder.Options, new StaticTenantContext(Guid.Empty));
     }

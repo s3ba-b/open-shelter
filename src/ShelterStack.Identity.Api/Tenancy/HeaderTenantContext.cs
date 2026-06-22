@@ -12,14 +12,18 @@ public sealed class HeaderTenantContext : ITenantContext
 
     public HeaderTenantContext(IHttpContextAccessor httpContextAccessor)
     {
-        var httpContext = httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException("Tenant resolution requires an active HTTP request.");
+        var httpContext =
+            httpContextAccessor.HttpContext
+            ?? throw new InvalidOperationException(
+                "Tenant resolution requires an active HTTP request."
+            );
 
         var headerValue = httpContext.Request.Headers[HeaderName].FirstOrDefault();
         if (!Guid.TryParse(headerValue, out var tenantId))
         {
             throw new TenantResolutionException(
-                $"Request is missing a valid '{HeaderName}' header (expected a GUID).");
+                $"Request is missing a valid '{HeaderName}' header (expected a GUID)."
+            );
         }
 
         TenantId = tenantId;

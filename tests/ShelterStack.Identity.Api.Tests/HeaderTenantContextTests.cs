@@ -29,13 +29,17 @@ public class HeaderTenantContextTests
     [Fact]
     public void Throws_WhenHeaderMissing()
     {
-        Assert.Throws<TenantResolutionException>(() => new HeaderTenantContext(AccessorWithHeader(null)));
+        Assert.Throws<TenantResolutionException>(() =>
+            new HeaderTenantContext(AccessorWithHeader(null))
+        );
     }
 
     [Fact]
     public void Throws_WhenHeaderIsNotAGuid()
     {
-        Assert.Throws<TenantResolutionException>(() => new HeaderTenantContext(AccessorWithHeader("not-a-guid")));
+        Assert.Throws<TenantResolutionException>(() =>
+            new HeaderTenantContext(AccessorWithHeader("not-a-guid"))
+        );
     }
 
     [Fact]

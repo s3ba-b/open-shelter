@@ -34,8 +34,13 @@ public sealed class LoginEndpointTests : IAsyncLifetime
 
         // See CrossTenantIsolationTests for why the connection string is supplied via env var
         // and the host runs as Production.
-        Environment.SetEnvironmentVariable("ConnectionStrings__identitydb", _postgres.GetConnectionString());
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b => b.UseEnvironment("Production"));
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__identitydb",
+            _postgres.GetConnectionString()
+        );
+        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
+            b.UseEnvironment("Production")
+        );
     }
 
     public async Task DisposeAsync()
@@ -52,7 +57,8 @@ public sealed class LoginEndpointTests : IAsyncLifetime
 
         using var response = await client.PostAsJsonAsync(
             "/login",
-            new LoginRequest("admin@northside.example", "Demo123!"));
+            new LoginRequest("admin@northside.example", "Demo123!")
+        );
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -64,7 +70,10 @@ public sealed class LoginEndpointTests : IAsyncLifetime
         // decode and verify the signature/issuer/audience/lifetime rather than just trusting
         // the response shape.
         var principal = ValidateToken(body.AccessToken);
-        Assert.Equal(DemoTenants.Northside.ToString(), principal.FindFirst(JwtTokenIssuer.TenantIdClaim)?.Value);
+        Assert.Equal(
+            DemoTenants.Northside.ToString(),
+            principal.FindFirst(JwtTokenIssuer.TenantIdClaim)?.Value
+        );
         Assert.Equal("Admin", principal.FindFirst(JwtTokenIssuer.RoleClaim)?.Value);
     }
 
@@ -75,7 +84,10 @@ public sealed class LoginEndpointTests : IAsyncLifetime
     {
         using var client = _factory.CreateClient();
 
-        using var response = await client.PostAsJsonAsync("/login", new LoginRequest(email, password));
+        using var response = await client.PostAsJsonAsync(
+            "/login",
+            new LoginRequest(email, password)
+        );
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }

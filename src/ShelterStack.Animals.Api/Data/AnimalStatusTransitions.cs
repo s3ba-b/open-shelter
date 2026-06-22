@@ -11,8 +11,18 @@ public static class AnimalStatusTransitions
     private static readonly Dictionary<AnimalStatus, AnimalStatus[]> Allowed = new()
     {
         [AnimalStatus.Intake] = [AnimalStatus.Available, AnimalStatus.MedicalHold],
-        [AnimalStatus.Available] = [AnimalStatus.Adopted, AnimalStatus.Fostered, AnimalStatus.MedicalHold],
-        [AnimalStatus.Fostered] = [AnimalStatus.Available, AnimalStatus.Adopted, AnimalStatus.MedicalHold],
+        [AnimalStatus.Available] =
+        [
+            AnimalStatus.Adopted,
+            AnimalStatus.Fostered,
+            AnimalStatus.MedicalHold,
+        ],
+        [AnimalStatus.Fostered] =
+        [
+            AnimalStatus.Available,
+            AnimalStatus.Adopted,
+            AnimalStatus.MedicalHold,
+        ],
         [AnimalStatus.MedicalHold] = [AnimalStatus.Available, AnimalStatus.Intake],
         [AnimalStatus.Adopted] = [AnimalStatus.Returned],
         [AnimalStatus.Returned] = [AnimalStatus.Intake, AnimalStatus.Available],

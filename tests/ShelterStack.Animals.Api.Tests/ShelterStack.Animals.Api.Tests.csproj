@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -21,5 +20,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ShelterStack.Animals.Api\ShelterStack.Animals.Api.csproj" />
   </ItemGroup>
-
 </Project>

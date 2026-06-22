@@ -16,20 +16,23 @@ namespace ShelterStack.Animals.Api.Migrations
                 table: "Animals",
                 type: "character varying(200)",
                 maxLength: 200,
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<DateOnly>(
                 name: "DateOfBirth",
                 table: "Animals",
                 type: "date",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "Description",
                 table: "Animals",
                 type: "character varying(2000)",
                 maxLength: 2000,
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "Sex",
@@ -37,7 +40,8 @@ namespace ShelterStack.Animals.Api.Migrations
                 type: "character varying(20)",
                 maxLength: 20,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "Species",
@@ -45,31 +49,22 @@ namespace ShelterStack.Animals.Api.Migrations
                 type: "character varying(20)",
                 maxLength: 20,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Breed",
-                table: "Animals");
+            migrationBuilder.DropColumn(name: "Breed", table: "Animals");
 
-            migrationBuilder.DropColumn(
-                name: "DateOfBirth",
-                table: "Animals");
+            migrationBuilder.DropColumn(name: "DateOfBirth", table: "Animals");
 
-            migrationBuilder.DropColumn(
-                name: "Description",
-                table: "Animals");
+            migrationBuilder.DropColumn(name: "Description", table: "Animals");
 
-            migrationBuilder.DropColumn(
-                name: "Sex",
-                table: "Animals");
+            migrationBuilder.DropColumn(name: "Sex", table: "Animals");
 
-            migrationBuilder.DropColumn(
-                name: "Species",
-                table: "Animals");
+            migrationBuilder.DropColumn(name: "Species", table: "Animals");
         }
     }
 }

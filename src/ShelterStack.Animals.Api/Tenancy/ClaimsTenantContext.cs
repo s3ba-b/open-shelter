@@ -13,14 +13,18 @@ public sealed class ClaimsTenantContext : ITenantContext
 {
     public ClaimsTenantContext(IHttpContextAccessor httpContextAccessor)
     {
-        var user = httpContextAccessor.HttpContext?.User
-            ?? throw new InvalidOperationException("Tenant resolution requires an active HTTP request.");
+        var user =
+            httpContextAccessor.HttpContext?.User
+            ?? throw new InvalidOperationException(
+                "Tenant resolution requires an active HTTP request."
+            );
 
         var tenantClaim = user.FindFirst(TokenAuth.TenantIdClaim)?.Value;
         if (!Guid.TryParse(tenantClaim, out var tenantId))
         {
             throw new InvalidOperationException(
-                $"Authenticated token is missing a valid '{TokenAuth.TenantIdClaim}' claim (expected a GUID).");
+                $"Authenticated token is missing a valid '{TokenAuth.TenantIdClaim}' claim (expected a GUID)."
+            );
         }
 
         TenantId = tenantId;

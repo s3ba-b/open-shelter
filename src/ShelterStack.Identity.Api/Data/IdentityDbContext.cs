@@ -3,8 +3,10 @@ using ShelterStack.Identity.Api.Tenancy;
 
 namespace ShelterStack.Identity.Api.Data;
 
-public sealed class IdentityDbContext(DbContextOptions<IdentityDbContext> options, ITenantContext tenantContext)
-    : DbContext(options)
+public sealed class IdentityDbContext(
+    DbContextOptions<IdentityDbContext> options,
+    ITenantContext tenantContext
+) : DbContext(options)
 {
     public DbSet<Organization> Organizations => Set<Organization>();
 

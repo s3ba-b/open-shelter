@@ -4,7 +4,8 @@ builder.AddServiceDefaults();
 
 // Reverse proxy: routes are loaded from config and destinations are resolved
 // through Aspire service discovery (e.g. "http://animals-api").
-builder.Services.AddReverseProxy()
+builder
+    .Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
     .AddServiceDiscoveryDestinationResolver();
 

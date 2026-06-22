@@ -27,8 +27,23 @@ public class TenantQueryFilterTests
         await using (var seedContext = CreateContext(databaseName, tenantA))
         {
             seedContext.Users.AddRange(
-                new User { Id = Guid.NewGuid(), TenantId = tenantA, Email = "a@example.com", PasswordHash = "x", Role = UserRole.Admin },
-                new User { Id = Guid.NewGuid(), TenantId = tenantB, Email = "b@example.com", PasswordHash = "x", Role = UserRole.Staff });
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = tenantA,
+                    Email = "a@example.com",
+                    PasswordHash = "x",
+                    Role = UserRole.Admin,
+                },
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = tenantB,
+                    Email = "b@example.com",
+                    PasswordHash = "x",
+                    Role = UserRole.Staff,
+                }
+            );
             await seedContext.SaveChangesAsync();
         }
 
@@ -52,8 +67,23 @@ public class TenantQueryFilterTests
 
         await using var context = CreateContext(databaseName, tenantA);
         context.Users.AddRange(
-            new User { Id = Guid.NewGuid(), TenantId = tenantA, Email = "a@example.com", PasswordHash = "x", Role = UserRole.Admin },
-            new User { Id = Guid.NewGuid(), TenantId = tenantB, Email = "b@example.com", PasswordHash = "x", Role = UserRole.Staff });
+            new User
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantA,
+                Email = "a@example.com",
+                PasswordHash = "x",
+                Role = UserRole.Admin,
+            },
+            new User
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantB,
+                Email = "b@example.com",
+                PasswordHash = "x",
+                Role = UserRole.Staff,
+            }
+        );
         await context.SaveChangesAsync();
 
         var allUsers = await context.Users.IgnoreQueryFilters().ToListAsync();
