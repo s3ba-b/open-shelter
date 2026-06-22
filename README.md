@@ -1,16 +1,16 @@
-# Open Shelter (OSMP)
+# ShelterStack
 
 > An open-source, cloud-ready SaaS platform that lets independent animal shelters and rescue organizations manage their day-to-day operations from a single hosted instance, while keeping each organization's data fully isolated from the others.
 
 <!-- Badges: fill in once CI exists and the repo is public -->
-[![CI](https://github.com/s3ba-b/open-shelter/actions/workflows/ci.yml/badge.svg)](https://github.com/s3ba-b/open-shelter/actions/workflows/ci.yml)
+[![CI](https://github.com/s3ba-b/shelterstack/actions/workflows/ci.yml/badge.svg)](https://github.com/s3ba-b/shelterstack/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
-🌐 Landing page: https://s3ba-b.github.io/open-shelter/
+🌐 Landing page: https://s3ba-b.github.io/shelterstack/
 
 ## Overview
 
-Many small shelters and rescues run on spreadsheets and ad-hoc tools. Open Shelter is a free, self-hostable, multi-tenant platform that handles animals, intake, adoptions, fostering, and medical scheduling — built on .NET Aspire to demonstrate a modern, observable, distributed-systems architecture.
+Many small shelters and rescues run on spreadsheets and ad-hoc tools. ShelterStack is a free, self-hostable, multi-tenant platform that handles animals, intake, adoptions, fostering, and medical scheduling — built on .NET Aspire to demonstrate a modern, observable, distributed-systems architecture.
 
 See the [project charter](CHARTER.md) for the full objectives, scope, and constraints, and the [roadmap](ROADMAP.md) for the milestone-by-milestone plan. New here? The [glossary](GLOSSARY.md) explains the domain and technical terms; [PRIVACY.md](PRIVACY.md) is the forward-looking GDPR/RODO working reference.
 
@@ -52,7 +52,7 @@ aspire run
 
 `aspire run` auto-detects the AppHost project in the repo and builds/runs it; no
 need to pass `--project`. If you don't have the Aspire CLI installed, `dotnet
-run --project src/OpenShelter.AppHost` works as a fallback. Open the Aspire
+run --project src/ShelterStack.AppHost` works as a fallback. Open the Aspire
 dashboard link printed on startup to confirm the resources and services report
 healthy.
 
