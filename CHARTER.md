@@ -31,6 +31,22 @@ The project pursues three parallel goals:
 - Background jobs run reliably and their effects are observable (e.g. reminders generated, traces visible in the dashboard).
 - The repository is licensed under AGPL-3.0, documented well enough for a newcomer to run it locally and deploy it, and includes an architecture diagram.
 
+## Stakeholders
+
+Stakeholders include both people and non-human factors whose existence shapes the
+system's requirements.
+
+| Stakeholder | Type | Stake / influence |
+|---|---|---|
+| Shelter / rescue staff & volunteers | Human, direct | Primary users; manage animals, intake, adoptions, fostering, medical. Roles: admin, staff, volunteer. |
+| Shelter / rescue organizations | Human, direct | Tenants and data **controllers**; require strict isolation of their data. |
+| Operator (whoever hosts a shared instance) | Human, direct | Data **processor**; carries the GDPR/operational obligations in [PRIVACY.md](PRIVACY.md). |
+| Adoption applicants, fosters, volunteers | Human, indirect | Data subjects whose personal data is processed; their rights drive concrete features. |
+| Project author / contributors | Human, direct | Build and maintain the platform; bound by the AGPL/DCO. |
+| GDPR / RODO regulation | Inanimate, indirect | Imposes data-protection requirements (see [PRIVACY.md](PRIVACY.md)). |
+| .NET Aspire (upstream) | Inanimate, direct | Frequent releases and breaking changes constrain structure and upgrade cadence. |
+| Cloud sub-processors (host, email, etc.) | Inanimate, indirect | Region and contractual constraints (EU residency, SCC). |
+
 ## Constraints
 
 - **Solo developer, part-time effort** over roughly a 6-month window — scope stays focused on the backend plus a staff-facing web application (Blazor, milestone M3); public-facing adopter portals and mobile apps remain out of scope.
@@ -83,7 +99,7 @@ The project's licensing is chosen to keep the platform freely usable by shelters
 
 ## Legal & compliance considerations
 
-*Note: this is a forward-looking checklist for an eventual public launch, not legal advice. Before offering the platform publicly in Poland / the EU, obtain professional legal and data-protection (DPO) review.* These items matter most if the platform is ever hosted for real organizations rather than run only as a demo.
+*Note: this is a forward-looking checklist for an eventual public launch, not legal advice. Before offering the platform publicly in Poland / the EU, obtain professional legal and data-protection (DPO) review.* These items matter most if the platform is ever hosted for real organizations rather than run only as a demo. The detailed working reference — personal-data categories, legal bases, retention, data-subject-rights-to-feature mapping, breach runbook, and EU launch checklist — lives in [PRIVACY.md](PRIVACY.md).
 
 - **GDPR / RODO is the dominant obligation.** The platform processes personal data of people (adoption applicants, fosters, volunteers, staff). When hosting for multiple organizations, the operator is typically a **processor** and each shelter a **controller**, which requires a **Data Processing Agreement (DPA, Art. 28)** with every tenant, a **record of processing (Art. 30)**, a privacy policy / information notice (Art. 13/14), and breach notification to **UODO** within 72 hours (Art. 33/34).
 - **Data-subject rights as a technical requirement.** Access, rectification, erasure, and portability (Art. 15–22) must be supported in code: the system must be able to **export and permanently delete a specific person's data**. Designing this early avoids costly retrofitting. In the MVP these operations are initiated by a **tenant admin via the staff web app / API** (there is no public adopter portal in scope), so the capability exists in code without contradicting the deferred public-facing portal.
