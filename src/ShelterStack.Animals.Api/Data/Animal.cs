@@ -30,4 +30,11 @@ public sealed class Animal
 
     /// <summary>Free-text notes — temperament, markings, medical flags, etc.</summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Where the animal sits in its shelter lifecycle. Defaults to <see cref="AnimalStatus.Intake"/>
+    /// for every newly created animal; only moves between statuses allowed by
+    /// <see cref="AnimalStatusTransitions"/> are accepted by the status-change endpoint.
+    /// </summary>
+    public AnimalStatus Status { get; set; } = AnimalStatus.Intake;
 }

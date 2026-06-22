@@ -29,7 +29,8 @@ public sealed record AnimalResponse(
     string? Breed,
     AnimalSex Sex,
     DateOnly? DateOfBirth,
-    string? Description)
+    string? Description,
+    AnimalStatus Status)
 {
     public static AnimalResponse From(Animal animal) => new(
         animal.Id,
@@ -38,5 +39,21 @@ public sealed record AnimalResponse(
         animal.Breed,
         animal.Sex,
         animal.DateOfBirth,
-        animal.Description);
+        animal.Description,
+        animal.Status);
+}
+
+/// <summary>The status a caller wants to move an animal to. Rejected with a 4xx by the
+/// status-change endpoint if it isn't a legal move from the animal's current status — see
+/// <see cref="AnimalStatusTransitions"/>.</summary>
+public sealed record ChangeAnimalStatusRequest(AnimalStatus Status);
+
+/// <summary>One row of an animal's status-change history, as returned by the
+/// list-status-history endpoint.</summary>
+public sealed record AnimalStatusHistoryResponse(Guid Id, AnimalStatus Status, DateTimeOffset ChangedAtUtc)
+{
+    public static AnimalStatusHistoryResponse From(AnimalStatusHistory history) => new(
+        history.Id,
+        history.Status,
+        history.ChangedAtUtc);
 }
