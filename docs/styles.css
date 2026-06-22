@@ -212,6 +212,14 @@ a:focus-visible {
 .roadmap span { color: var(--muted); font-size: 0.92rem; }
 .roadmap em { color: var(--accent); font-style: normal; }
 
+.roadmap-full { margin: 20px 0 0; }
+.roadmap-full a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+.roadmap-full a:hover { text-decoration: underline; }
+
 .cta-section { text-align: center; }
 .cta-section .lead { margin: 0 auto 24px; }
 
