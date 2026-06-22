@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OpenShelter.Animals.Api;
 using OpenShelter.Animals.Api.Auth;
+using OpenShelter.Animals.Api.Data;
 using OpenShelter.Animals.Api.Tenancy;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -102,6 +104,90 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
+    [Fact]
+    public async Task AnimalCreatedByOneTenant_IsInvisibleToAnother_AcrossTheRicherEntity()
+    {
+        using var client = _factory.CreateClient();
+
+        // Create a fully-populated animal as Northside, exercising every new field on the way in.
+        var created = await CreateAnimalAsync(client, DemoTenants.Northside, new CreateAnimalRequest(
+            Name: "Rex",
+            Species: AnimalSpecies.Dog,
+            Breed: "German Shepherd",
+            Sex: AnimalSex.Male,
+            DateOfBirth: new DateOnly(2020, 1, 15),
+            Description: "Energetic; needs a yard."));
+
+        // Northside reads it back by id with every field intact (and enums as readable names).
+        using var northsideFetch = await GetAnimalAsync(client, DemoTenants.Northside, created.Id);
+        Assert.Equal(HttpStatusCode.OK, northsideFetch.StatusCode);
+        var northsideView = await northsideFetch.Content.ReadFromJsonAsync<AnimalDto>();
+        Assert.NotNull(northsideView);
+        Assert.Equal("Rex", northsideView!.Name);
+        Assert.Equal("Dog", northsideView.Species);
+        Assert.Equal("German Shepherd", northsideView.Breed);
+        Assert.Equal("Male", northsideView.Sex);
+        Assert.Equal(new DateOnly(2020, 1, 15), northsideView.DateOfBirth);
+
+        // It appears in Northside's list alongside the seeded Buddy.
+        var northsideList = await GetAnimalsAsync(client, DemoTenants.Northside);
+        Assert.Contains(northsideList, a => a.Name == "Rex");
+
+        // Riverside must never see Rex: not by id — a cross-tenant id is a 404, indistinguishable
+        // from a row that does not exist...
+        using var riversideFetch = await GetAnimalAsync(client, DemoTenants.Riverside, created.Id);
+        Assert.Equal(HttpStatusCode.NotFound, riversideFetch.StatusCode);
+
+        // ...and not in its list, which still holds only its own seeded Whiskers.
+        var riversideList = await GetAnimalsAsync(client, DemoTenants.Riverside);
+        Assert.DoesNotContain(riversideList, a => a.Name == "Rex");
+        Assert.Contains(riversideList, a => a.Name == "Whiskers");
+
+        // The write path is scoped too: Riverside cannot update Northside's animal — the query
+        // filter turns the lookup into a 404 rather than letting the mutation land.
+        using var riversideUpdate = await UpdateAnimalAsync(client, DemoTenants.Riverside, created.Id, new UpdateAnimalRequest(
+            Name: "Hacked", Species: AnimalSpecies.Cat, Breed: null, Sex: AnimalSex.Unknown, DateOfBirth: null, Description: null));
+        Assert.Equal(HttpStatusCode.NotFound, riversideUpdate.StatusCode);
+
+        // And Northside's copy is untouched by that attempt.
+        using var afterAttack = await GetAnimalAsync(client, DemoTenants.Northside, created.Id);
+        var stillRex = await afterAttack.Content.ReadFromJsonAsync<AnimalDto>();
+        Assert.Equal("Rex", stillRex!.Name);
+    }
+
+    private async Task<AnimalDto> CreateAnimalAsync(HttpClient client, Guid tenantId, CreateAnimalRequest body)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/") { Content = JsonContent.Create(body) };
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer", IssueToken(tenantId, TokenAuth.StaffRole));
+
+        using var response = await client.SendAsync(request);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        var dto = await response.Content.ReadFromJsonAsync<AnimalDto>();
+        Assert.NotNull(dto);
+        return dto!;
+    }
+
+    private async Task<HttpResponseMessage> GetAnimalAsync(HttpClient client, Guid tenantId, Guid id)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/{id}");
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer", IssueToken(tenantId, TokenAuth.AdminRole));
+
+        return await client.SendAsync(request);
+    }
+
+    private async Task<HttpResponseMessage> UpdateAnimalAsync(
+        HttpClient client, Guid tenantId, Guid id, UpdateAnimalRequest body)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"/{id}") { Content = JsonContent.Create(body) };
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer", IssueToken(tenantId, TokenAuth.StaffRole));
+
+        return await client.SendAsync(request);
+    }
+
     private async Task<AnimalDto[]> GetAnimalsAsync(HttpClient client, Guid tenantId)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "/");
@@ -139,5 +225,14 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private sealed record AnimalDto(Guid Id, string Name);
+    // Enums arrive as their readable names (the host configures JsonStringEnumConverter), so the
+    // Species/Sex fields are typed as string here to assert on exactly what the API emits.
+    private sealed record AnimalDto(
+        Guid Id,
+        string Name,
+        string Species,
+        string? Breed,
+        string Sex,
+        DateOnly? DateOfBirth,
+        string? Description);
 }
