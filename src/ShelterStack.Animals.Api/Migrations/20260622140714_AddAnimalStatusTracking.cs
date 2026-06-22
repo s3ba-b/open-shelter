@@ -17,7 +17,8 @@ namespace ShelterStack.Animals.Api.Migrations
                 type: "character varying(20)",
                 maxLength: 20,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.CreateTable(
                 name: "AnimalStatusHistory",
@@ -26,8 +27,15 @@ namespace ShelterStack.Animals.Api.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false),
                     AnimalId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    ChangedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    Status = table.Column<string>(
+                        type: "character varying(20)",
+                        maxLength: 20,
+                        nullable: false
+                    ),
+                    ChangedAtUtc = table.Column<DateTimeOffset>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
                 },
                 constraints: table =>
                 {
@@ -37,24 +45,24 @@ namespace ShelterStack.Animals.Api.Migrations
                         column: x => x.AnimalId,
                         principalTable: "Animals",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_AnimalStatusHistory_AnimalId",
                 table: "AnimalStatusHistory",
-                column: "AnimalId");
+                column: "AnimalId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AnimalStatusHistory");
+            migrationBuilder.DropTable(name: "AnimalStatusHistory");
 
-            migrationBuilder.DropColumn(
-                name: "Status",
-                table: "Animals");
+            migrationBuilder.DropColumn(name: "Status", table: "Animals");
         }
     }
 }

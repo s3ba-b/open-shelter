@@ -44,14 +44,19 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         // ConfigureAppConfiguration on WithWebHostBuilder doesn't reliably layer over a
         // ConfigurationManager already populated by WebApplication.CreateBuilder for the
         // minimal hosting model.
-        Environment.SetEnvironmentVariable("ConnectionStrings__shelterstackdb", _postgres.GetConnectionString());
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__shelterstackdb",
+            _postgres.GetConnectionString()
+        );
 
         // Run as Production, not the WebApplicationFactory default of Development: ASP.NET
         // Core's DI scope-validation (on by default in Development) would turn a pooled-vs-
         // scoped DbContext regression into a startup crash, masking the actual failure mode —
         // a silent cross-tenant data leak — that this test exists to catch. Per CHARTER.md,
         // that crash isn't a safety net we get in Production, so the test shouldn't lean on it.
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b => b.UseEnvironment("Production"));
+        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
+            b.UseEnvironment("Production")
+        );
     }
 
     public async Task DisposeAsync()
@@ -97,7 +102,9 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/");
         request.Headers.Authorization = new AuthenticationHeaderValue(
-            "Bearer", IssueToken(DemoTenants.Northside, "Volunteer"));
+            "Bearer",
+            IssueToken(DemoTenants.Northside, "Volunteer")
+        );
 
         using var response = await client.SendAsync(request);
 
@@ -110,13 +117,18 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         using var client = _factory.CreateClient();
 
         // Create a fully-populated animal as Northside, exercising every new field on the way in.
-        var created = await CreateAnimalAsync(client, DemoTenants.Northside, new CreateAnimalRequest(
-            Name: "Rex",
-            Species: AnimalSpecies.Dog,
-            Breed: "German Shepherd",
-            Sex: AnimalSex.Male,
-            DateOfBirth: new DateOnly(2020, 1, 15),
-            Description: "Energetic; needs a yard."));
+        var created = await CreateAnimalAsync(
+            client,
+            DemoTenants.Northside,
+            new CreateAnimalRequest(
+                Name: "Rex",
+                Species: AnimalSpecies.Dog,
+                Breed: "German Shepherd",
+                Sex: AnimalSex.Male,
+                DateOfBirth: new DateOnly(2020, 1, 15),
+                Description: "Energetic; needs a yard."
+            )
+        );
 
         // Northside reads it back by id with every field intact (and enums as readable names).
         using var northsideFetch = await GetAnimalAsync(client, DemoTenants.Northside, created.Id);
@@ -145,8 +157,19 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
 
         // The write path is scoped too: Riverside cannot update Northside's animal — the query
         // filter turns the lookup into a 404 rather than letting the mutation land.
-        using var riversideUpdate = await UpdateAnimalAsync(client, DemoTenants.Riverside, created.Id, new UpdateAnimalRequest(
-            Name: "Hacked", Species: AnimalSpecies.Cat, Breed: null, Sex: AnimalSex.Unknown, DateOfBirth: null, Description: null));
+        using var riversideUpdate = await UpdateAnimalAsync(
+            client,
+            DemoTenants.Riverside,
+            created.Id,
+            new UpdateAnimalRequest(
+                Name: "Hacked",
+                Species: AnimalSpecies.Cat,
+                Breed: null,
+                Sex: AnimalSex.Unknown,
+                DateOfBirth: null,
+                Description: null
+            )
+        );
         Assert.Equal(HttpStatusCode.NotFound, riversideUpdate.StatusCode);
 
         // And Northside's copy is untouched by that attempt.
@@ -160,30 +183,51 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
     {
         using var client = _factory.CreateClient();
 
-        var created = await CreateAnimalAsync(client, DemoTenants.Northside, new CreateAnimalRequest(
-            Name: "Milo",
-            Species: AnimalSpecies.Dog,
-            Breed: null,
-            Sex: AnimalSex.Unknown,
-            DateOfBirth: null,
-            Description: null));
+        var created = await CreateAnimalAsync(
+            client,
+            DemoTenants.Northside,
+            new CreateAnimalRequest(
+                Name: "Milo",
+                Species: AnimalSpecies.Dog,
+                Breed: null,
+                Sex: AnimalSex.Unknown,
+                DateOfBirth: null,
+                Description: null
+            )
+        );
 
         // Riverside cannot move Northside's animal to a new status — the query filter turns the
         // lookup into a 404 rather than letting the mutation land.
         using var riversideChange = await ChangeStatusAsync(
-            client, DemoTenants.Riverside, created.Id, AnimalStatus.Available);
+            client,
+            DemoTenants.Riverside,
+            created.Id,
+            AnimalStatus.Available
+        );
         Assert.Equal(HttpStatusCode.NotFound, riversideChange.StatusCode);
 
         // Nor can Riverside read Northside's status history for that animal.
-        using var riversideHistory = await GetStatusHistoryAsync(client, DemoTenants.Riverside, created.Id);
+        using var riversideHistory = await GetStatusHistoryAsync(
+            client,
+            DemoTenants.Riverside,
+            created.Id
+        );
         Assert.Equal(HttpStatusCode.NotFound, riversideHistory.StatusCode);
 
         // Northside's own legal transition succeeds and is recorded.
         using var northsideChange = await ChangeStatusAsync(
-            client, DemoTenants.Northside, created.Id, AnimalStatus.Available);
+            client,
+            DemoTenants.Northside,
+            created.Id,
+            AnimalStatus.Available
+        );
         Assert.Equal(HttpStatusCode.OK, northsideChange.StatusCode);
 
-        using var northsideHistory = await GetStatusHistoryAsync(client, DemoTenants.Northside, created.Id);
+        using var northsideHistory = await GetStatusHistoryAsync(
+            client,
+            DemoTenants.Northside,
+            created.Id
+        );
         Assert.Equal(HttpStatusCode.OK, northsideHistory.StatusCode);
         var history = await northsideHistory.Content.ReadFromJsonAsync<StatusHistoryEntryDto[]>();
         Assert.NotNull(history);
@@ -196,18 +240,27 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
     {
         using var client = _factory.CreateClient();
 
-        var created = await CreateAnimalAsync(client, DemoTenants.Northside, new CreateAnimalRequest(
-            Name: "Daisy",
-            Species: AnimalSpecies.Cat,
-            Breed: null,
-            Sex: AnimalSex.Unknown,
-            DateOfBirth: null,
-            Description: null));
+        var created = await CreateAnimalAsync(
+            client,
+            DemoTenants.Northside,
+            new CreateAnimalRequest(
+                Name: "Daisy",
+                Species: AnimalSpecies.Cat,
+                Breed: null,
+                Sex: AnimalSex.Unknown,
+                DateOfBirth: null,
+                Description: null
+            )
+        );
 
         // A freshly created animal starts at Intake; Intake -> Adopted skips Available entirely
         // and must be rejected.
         using var illegalChange = await ChangeStatusAsync(
-            client, DemoTenants.Northside, created.Id, AnimalStatus.Adopted);
+            client,
+            DemoTenants.Northside,
+            created.Id,
+            AnimalStatus.Adopted
+        );
         Assert.Equal(HttpStatusCode.BadRequest, illegalChange.StatusCode);
 
         // The rejected attempt left no history row and the animal's status unchanged.
@@ -217,32 +270,53 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
     }
 
     private async Task<HttpResponseMessage> ChangeStatusAsync(
-        HttpClient client, Guid tenantId, Guid animalId, AnimalStatus status)
+        HttpClient client,
+        Guid tenantId,
+        Guid animalId,
+        AnimalStatus status
+    )
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, $"/{animalId}/status")
         {
             Content = JsonContent.Create(new { Status = status.ToString() }),
         };
         request.Headers.Authorization = new AuthenticationHeaderValue(
-            "Bearer", IssueToken(tenantId, TokenAuth.StaffRole));
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.StaffRole)
+        );
 
         return await client.SendAsync(request);
     }
 
-    private async Task<HttpResponseMessage> GetStatusHistoryAsync(HttpClient client, Guid tenantId, Guid animalId)
+    private async Task<HttpResponseMessage> GetStatusHistoryAsync(
+        HttpClient client,
+        Guid tenantId,
+        Guid animalId
+    )
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"/{animalId}/status-history");
         request.Headers.Authorization = new AuthenticationHeaderValue(
-            "Bearer", IssueToken(tenantId, TokenAuth.AdminRole));
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.AdminRole)
+        );
 
         return await client.SendAsync(request);
     }
 
-    private async Task<AnimalDto> CreateAnimalAsync(HttpClient client, Guid tenantId, CreateAnimalRequest body)
+    private async Task<AnimalDto> CreateAnimalAsync(
+        HttpClient client,
+        Guid tenantId,
+        CreateAnimalRequest body
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/") { Content = JsonContent.Create(body) };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/")
+        {
+            Content = JsonContent.Create(body),
+        };
         request.Headers.Authorization = new AuthenticationHeaderValue(
-            "Bearer", IssueToken(tenantId, TokenAuth.StaffRole));
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.StaffRole)
+        );
 
         using var response = await client.SendAsync(request);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -252,21 +326,36 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         return dto!;
     }
 
-    private async Task<HttpResponseMessage> GetAnimalAsync(HttpClient client, Guid tenantId, Guid id)
+    private async Task<HttpResponseMessage> GetAnimalAsync(
+        HttpClient client,
+        Guid tenantId,
+        Guid id
+    )
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"/{id}");
         request.Headers.Authorization = new AuthenticationHeaderValue(
-            "Bearer", IssueToken(tenantId, TokenAuth.AdminRole));
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.AdminRole)
+        );
 
         return await client.SendAsync(request);
     }
 
     private async Task<HttpResponseMessage> UpdateAnimalAsync(
-        HttpClient client, Guid tenantId, Guid id, UpdateAnimalRequest body)
+        HttpClient client,
+        Guid tenantId,
+        Guid id,
+        UpdateAnimalRequest body
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Put, $"/{id}") { Content = JsonContent.Create(body) };
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"/{id}")
+        {
+            Content = JsonContent.Create(body),
+        };
         request.Headers.Authorization = new AuthenticationHeaderValue(
-            "Bearer", IssueToken(tenantId, TokenAuth.StaffRole));
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.StaffRole)
+        );
 
         return await client.SendAsync(request);
     }
@@ -275,7 +364,9 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "/");
         request.Headers.Authorization = new AuthenticationHeaderValue(
-            "Bearer", IssueToken(tenantId, TokenAuth.AdminRole));
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.AdminRole)
+        );
 
         using var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -292,7 +383,8 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
 
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
-            SecurityAlgorithms.HmacSha256);
+            SecurityAlgorithms.HmacSha256
+        );
 
         var token = new JwtSecurityToken(
             issuer: jwt.Issuer,
@@ -303,7 +395,8 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
                 new Claim(TokenAuth.RoleClaim, role),
             },
             expires: DateTime.UtcNow.AddMinutes(5),
-            signingCredentials: credentials);
+            signingCredentials: credentials
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
@@ -318,7 +411,12 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         string Sex,
         DateOnly? DateOfBirth,
         string? Description,
-        string Status);
+        string Status
+    );
 
-    private sealed record StatusHistoryEntryDto(Guid Id, string Status, DateTimeOffset ChangedAtUtc);
+    private sealed record StatusHistoryEntryDto(
+        Guid Id,
+        string Status,
+        DateTimeOffset ChangedAtUtc
+    );
 }

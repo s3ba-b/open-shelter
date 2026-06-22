@@ -10,7 +10,8 @@ public sealed record CreateAnimalRequest(
     string? Breed,
     AnimalSex Sex,
     DateOnly? DateOfBirth,
-    string? Description);
+    string? Description
+);
 
 /// <summary>Fields accepted when updating an animal (full replace of the editable fields).</summary>
 public sealed record UpdateAnimalRequest(
@@ -19,7 +20,8 @@ public sealed record UpdateAnimalRequest(
     string? Breed,
     AnimalSex Sex,
     DateOnly? DateOfBirth,
-    string? Description);
+    string? Description
+);
 
 /// <summary>The resource shape returned by the read and write endpoints.</summary>
 public sealed record AnimalResponse(
@@ -30,17 +32,20 @@ public sealed record AnimalResponse(
     AnimalSex Sex,
     DateOnly? DateOfBirth,
     string? Description,
-    AnimalStatus Status)
+    AnimalStatus Status
+)
 {
-    public static AnimalResponse From(Animal animal) => new(
-        animal.Id,
-        animal.Name,
-        animal.Species,
-        animal.Breed,
-        animal.Sex,
-        animal.DateOfBirth,
-        animal.Description,
-        animal.Status);
+    public static AnimalResponse From(Animal animal) =>
+        new(
+            animal.Id,
+            animal.Name,
+            animal.Species,
+            animal.Breed,
+            animal.Sex,
+            animal.DateOfBirth,
+            animal.Description,
+            animal.Status
+        );
 }
 
 /// <summary>The status a caller wants to move an animal to. Rejected with a 4xx by the
@@ -50,10 +55,12 @@ public sealed record ChangeAnimalStatusRequest(AnimalStatus Status);
 
 /// <summary>One row of an animal's status-change history, as returned by the
 /// list-status-history endpoint.</summary>
-public sealed record AnimalStatusHistoryResponse(Guid Id, AnimalStatus Status, DateTimeOffset ChangedAtUtc)
+public sealed record AnimalStatusHistoryResponse(
+    Guid Id,
+    AnimalStatus Status,
+    DateTimeOffset ChangedAtUtc
+)
 {
-    public static AnimalStatusHistoryResponse From(AnimalStatusHistory history) => new(
-        history.Id,
-        history.Status,
-        history.ChangedAtUtc);
+    public static AnimalStatusHistoryResponse From(AnimalStatusHistory history) =>
+        new(history.Id, history.Status, history.ChangedAtUtc);
 }

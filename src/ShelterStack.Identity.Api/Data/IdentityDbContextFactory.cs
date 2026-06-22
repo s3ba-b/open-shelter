@@ -12,8 +12,9 @@ public sealed class IdentityDbContextFactory : IDesignTimeDbContextFactory<Ident
 {
     public IdentityDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<IdentityDbContext>()
-            .UseNpgsql("Host=localhost;Database=identitydb;Username=design-time");
+        var optionsBuilder = new DbContextOptionsBuilder<IdentityDbContext>().UseNpgsql(
+            "Host=localhost;Database=identitydb;Username=design-time"
+        );
 
         return new IdentityDbContext(optionsBuilder.Options, new StaticTenantContext(Guid.Empty));
     }

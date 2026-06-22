@@ -27,8 +27,19 @@ public class TenantQueryFilterTests
         await using (var seedContext = CreateContext(databaseName, tenantA))
         {
             seedContext.Animals.AddRange(
-                new Animal { Id = Guid.NewGuid(), TenantId = tenantA, Name = "Buddy" },
-                new Animal { Id = Guid.NewGuid(), TenantId = tenantB, Name = "Whiskers" });
+                new Animal
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = tenantA,
+                    Name = "Buddy",
+                },
+                new Animal
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = tenantB,
+                    Name = "Whiskers",
+                }
+            );
             await seedContext.SaveChangesAsync();
         }
 
@@ -52,8 +63,19 @@ public class TenantQueryFilterTests
 
         await using var context = CreateContext(databaseName, tenantA);
         context.Animals.AddRange(
-            new Animal { Id = Guid.NewGuid(), TenantId = tenantA, Name = "Buddy" },
-            new Animal { Id = Guid.NewGuid(), TenantId = tenantB, Name = "Whiskers" });
+            new Animal
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantA,
+                Name = "Buddy",
+            },
+            new Animal
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantB,
+                Name = "Whiskers",
+            }
+        );
         await context.SaveChangesAsync();
 
         var allAnimals = await context.Animals.IgnoreQueryFilters().ToListAsync();

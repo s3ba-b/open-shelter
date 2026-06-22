@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Testcontainers.PostgreSql;
 using Xunit;
+using IdentityProgram = identity::Program;
 using LoginRequest = identity::ShelterStack.Identity.Api.Auth.LoginRequest;
 using LoginResponse = identity::ShelterStack.Identity.Api.Auth.LoginResponse;
-using IdentityProgram = identity::Program;
 
 namespace ShelterStack.IsolationTests;
 
@@ -44,11 +44,21 @@ public sealed class AuthPipelineCrossTenantIsolationTests : IAsyncLifetime
         // and the hosts run as Production. The two services read distinct connection-string keys,
         // so they don't collide; the assembly-wide DisableTestParallelization (see AssemblyInfo)
         // keeps these globals from racing with the M0 test's shelterstackdb value.
-        Environment.SetEnvironmentVariable("ConnectionStrings__identitydb", _identityDb.GetConnectionString());
-        Environment.SetEnvironmentVariable("ConnectionStrings__shelterstackdb", _animalsDb.GetConnectionString());
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__identitydb",
+            _identityDb.GetConnectionString()
+        );
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__shelterstackdb",
+            _animalsDb.GetConnectionString()
+        );
 
-        _identity = new WebApplicationFactory<IdentityProgram>().WithWebHostBuilder(b => b.UseEnvironment("Production"));
-        _animals = new WebApplicationFactory<Program>().WithWebHostBuilder(b => b.UseEnvironment("Production"));
+        _identity = new WebApplicationFactory<IdentityProgram>().WithWebHostBuilder(b =>
+            b.UseEnvironment("Production")
+        );
+        _animals = new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
+            b.UseEnvironment("Production")
+        );
     }
 
     public async Task DisposeAsync()
@@ -86,7 +96,10 @@ public sealed class AuthPipelineCrossTenantIsolationTests : IAsyncLifetime
     // All seeded demo users share the same password (see Identity's SeedDemoDataAsync).
     private static async Task<string> LoginAsync(HttpClient client, string email)
     {
-        using var response = await client.PostAsJsonAsync("/login", new LoginRequest(email, "Demo123!"));
+        using var response = await client.PostAsJsonAsync(
+            "/login",
+            new LoginRequest(email, "Demo123!")
+        );
         response.EnsureSuccessStatusCode();
 
         var body = await response.Content.ReadFromJsonAsync<LoginResponse>();

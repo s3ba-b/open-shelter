@@ -16,7 +16,8 @@ builder.AddServiceDefaults();
 // Serialize the Species/Sex enums as their names ("Dog", "Female") rather than integers, so
 // the resource shape stays readable and decoupled from the enum's declaration order.
 builder.Services.ConfigureHttpJsonOptions(options =>
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter())
+);
 
 // Connect to the PostgreSQL "shelterstackdb" resource via Aspire service discovery,
 // registering an NpgsqlDataSource plus a health check that proves the connection.
@@ -26,8 +27,9 @@ builder.AddNpgsqlDataSource("shelterstackdb");
 // constructor dependency, and DbContext pooling reuses instances (and whatever
 // scoped service they captured) across unrelated requests' scopes — exactly the
 // kind of cross-tenant leak this milestone exists to prevent.
-builder.Services.AddDbContext<AnimalsDbContext>((sp, options) =>
-    options.UseNpgsql(sp.GetRequiredService<NpgsqlDataSource>()));
+builder.Services.AddDbContext<AnimalsDbContext>(
+    (sp, options) => options.UseNpgsql(sp.GetRequiredService<NpgsqlDataSource>())
+);
 
 builder.Services.AddHttpContextAccessor();
 
@@ -35,10 +37,12 @@ builder.Services.AddHttpContextAccessor();
 // key/issuer/audience (the "Jwt" section). Configure<JwtOptions> also exposes the values to
 // integration tests via IOptions; the local snapshot is what AddJwtBearer needs at startup.
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
-var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+var jwtOptions =
+    builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
     ?? throw new InvalidOperationException("Missing 'Jwt' configuration section.");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         // Keep the custom claims ("role", "tenant_id") under their original names instead of
@@ -52,15 +56,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidAudience = jwtOptions.Audience,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtOptions.SigningKey)
+            ),
             ValidateLifetime = true,
             RoleClaimType = TokenAuth.RoleClaim,
         };
     });
 
 builder.Services.AddAuthorization(options =>
-    options.AddPolicy(TokenAuth.StaffOrAdminPolicy, policy =>
-        policy.RequireRole(TokenAuth.AdminRole, TokenAuth.StaffRole)));
+    options.AddPolicy(
+        TokenAuth.StaffOrAdminPolicy,
+        policy => policy.RequireRole(TokenAuth.AdminRole, TokenAuth.StaffRole)
+    )
+);
 
 // Tenant resolution now comes from the authenticated token's tenant_id claim (replacing the
 // M0 X-Tenant-Id header). The ITenantContext contract and every query filter built on it are
@@ -86,141 +95,167 @@ app.MapGet("/ping", () => Results.Ok(new { service = "animals-api", status = "ok
 var animals = app.MapGroup("").RequireAuthorization(TokenAuth.StaffOrAdminPolicy);
 
 // List the caller's animals.
-animals.MapGet("/", async (AnimalsDbContext db) =>
-{
-    var results = await db.Animals
-        .OrderBy(a => a.Name)
-        .Select(a => AnimalResponse.From(a))
-        .ToListAsync();
+animals.MapGet(
+    "/",
+    async (AnimalsDbContext db) =>
+    {
+        var results = await db
+            .Animals.OrderBy(a => a.Name)
+            .Select(a => AnimalResponse.From(a))
+            .ToListAsync();
 
-    return Results.Ok(results);
-});
+        return Results.Ok(results);
+    }
+);
 
 // Fetch one animal by id. The query filter turns a cross-tenant id into a 404, exactly as if
 // the row did not exist — another tenant's animal is never distinguishable from a missing one.
-animals.MapGet("/{id:guid}", async (Guid id, AnimalsDbContext db) =>
-{
-    var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
+animals.MapGet(
+    "/{id:guid}",
+    async (Guid id, AnimalsDbContext db) =>
+    {
+        var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
 
-    return animal is null ? Results.NotFound() : Results.Ok(AnimalResponse.From(animal));
-});
+        return animal is null ? Results.NotFound() : Results.Ok(AnimalResponse.From(animal));
+    }
+);
 
 // Create an animal in the caller's tenant. TenantId comes from the resolved ITenantContext
 // (the token), never the request body, so a caller cannot plant a row in another tenant.
-animals.MapPost("/", async (CreateAnimalRequest request, AnimalsDbContext db, ITenantContext tenant) =>
-{
-    if (string.IsNullOrWhiteSpace(request.Name))
+animals.MapPost(
+    "/",
+    async (CreateAnimalRequest request, AnimalsDbContext db, ITenantContext tenant) =>
     {
-        return Results.ValidationProblem(new Dictionary<string, string[]>
+        if (string.IsNullOrWhiteSpace(request.Name))
         {
-            [nameof(request.Name)] = ["Name is required."],
-        });
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]> { [nameof(request.Name)] = ["Name is required."] }
+            );
+        }
+
+        var animal = new Animal
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenant.TenantId,
+            Name = request.Name,
+            Species = request.Species,
+            Breed = request.Breed,
+            Sex = request.Sex,
+            DateOfBirth = request.DateOfBirth,
+            Description = request.Description,
+        };
+
+        db.Animals.Add(animal);
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/{animal.Id}", AnimalResponse.From(animal));
     }
-
-    var animal = new Animal
-    {
-        Id = Guid.NewGuid(),
-        TenantId = tenant.TenantId,
-        Name = request.Name,
-        Species = request.Species,
-        Breed = request.Breed,
-        Sex = request.Sex,
-        DateOfBirth = request.DateOfBirth,
-        Description = request.Description,
-    };
-
-    db.Animals.Add(animal);
-    await db.SaveChangesAsync();
-
-    return Results.Created($"/{animal.Id}", AnimalResponse.From(animal));
-});
+);
 
 // Update an animal. The query filter scopes the lookup to the caller's tenant, so an attempt
 // to update another tenant's animal resolves to NotFound rather than mutating their data.
-animals.MapPut("/{id:guid}", async (Guid id, UpdateAnimalRequest request, AnimalsDbContext db) =>
-{
-    if (string.IsNullOrWhiteSpace(request.Name))
+animals.MapPut(
+    "/{id:guid}",
+    async (Guid id, UpdateAnimalRequest request, AnimalsDbContext db) =>
     {
-        return Results.ValidationProblem(new Dictionary<string, string[]>
+        if (string.IsNullOrWhiteSpace(request.Name))
         {
-            [nameof(request.Name)] = ["Name is required."],
-        });
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]> { [nameof(request.Name)] = ["Name is required."] }
+            );
+        }
+
+        var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
+        if (animal is null)
+        {
+            return Results.NotFound();
+        }
+
+        animal.Name = request.Name;
+        animal.Species = request.Species;
+        animal.Breed = request.Breed;
+        animal.Sex = request.Sex;
+        animal.DateOfBirth = request.DateOfBirth;
+        animal.Description = request.Description;
+
+        await db.SaveChangesAsync();
+
+        return Results.Ok(AnimalResponse.From(animal));
     }
-
-    var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
-    if (animal is null)
-    {
-        return Results.NotFound();
-    }
-
-    animal.Name = request.Name;
-    animal.Species = request.Species;
-    animal.Breed = request.Breed;
-    animal.Sex = request.Sex;
-    animal.DateOfBirth = request.DateOfBirth;
-    animal.Description = request.Description;
-
-    await db.SaveChangesAsync();
-
-    return Results.Ok(AnimalResponse.From(animal));
-});
+);
 
 // Move an animal to a new status, rejecting illegal transitions (e.g. Adopted straight back to
 // Intake) with a 400 and recording every accepted change as a status-history row. The query
 // filter scopes the lookup to the caller's tenant, so a cross-tenant id is a 404 exactly as for
 // the other write paths.
-animals.MapPost("/{id:guid}/status", async (
-    Guid id, ChangeAnimalStatusRequest request, AnimalsDbContext db, ITenantContext tenant) =>
-{
-    var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
-    if (animal is null)
+animals.MapPost(
+    "/{id:guid}/status",
+    async (
+        Guid id,
+        ChangeAnimalStatusRequest request,
+        AnimalsDbContext db,
+        ITenantContext tenant
+    ) =>
     {
-        return Results.NotFound();
-    }
-
-    if (!AnimalStatusTransitions.IsAllowed(animal.Status, request.Status))
-    {
-        return Results.ValidationProblem(new Dictionary<string, string[]>
+        var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
+        if (animal is null)
         {
-            [nameof(request.Status)] =
-                [$"Cannot move an animal from {animal.Status} to {request.Status}."],
-        });
+            return Results.NotFound();
+        }
+
+        if (!AnimalStatusTransitions.IsAllowed(animal.Status, request.Status))
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    [nameof(request.Status)] =
+                    [
+                        $"Cannot move an animal from {animal.Status} to {request.Status}.",
+                    ],
+                }
+            );
+        }
+
+        animal.Status = request.Status;
+        db.AnimalStatusHistory.Add(
+            new AnimalStatusHistory
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenant.TenantId,
+                AnimalId = animal.Id,
+                Status = request.Status,
+                ChangedAtUtc = DateTimeOffset.UtcNow,
+            }
+        );
+
+        await db.SaveChangesAsync();
+
+        return Results.Ok(AnimalResponse.From(animal));
     }
-
-    animal.Status = request.Status;
-    db.AnimalStatusHistory.Add(new AnimalStatusHistory
-    {
-        Id = Guid.NewGuid(),
-        TenantId = tenant.TenantId,
-        AnimalId = animal.Id,
-        Status = request.Status,
-        ChangedAtUtc = DateTimeOffset.UtcNow,
-    });
-
-    await db.SaveChangesAsync();
-
-    return Results.Ok(AnimalResponse.From(animal));
-});
+);
 
 // List an animal's status-change history, oldest first. Tenant-scoped via the query filter on
 // AnimalStatusHistory, and the Animal lookup above means a cross-tenant animal id is a 404
 // rather than an empty history list — the two are not the same thing to the caller.
-animals.MapGet("/{id:guid}/status-history", async (Guid id, AnimalsDbContext db) =>
-{
-    var animalExists = await db.Animals.AnyAsync(a => a.Id == id);
-    if (!animalExists)
+animals.MapGet(
+    "/{id:guid}/status-history",
+    async (Guid id, AnimalsDbContext db) =>
     {
-        return Results.NotFound();
+        var animalExists = await db.Animals.AnyAsync(a => a.Id == id);
+        if (!animalExists)
+        {
+            return Results.NotFound();
+        }
+
+        var history = await db
+            .AnimalStatusHistory.Where(h => h.AnimalId == id)
+            .OrderBy(h => h.ChangedAtUtc)
+            .Select(h => AnimalStatusHistoryResponse.From(h))
+            .ToListAsync();
+
+        return Results.Ok(history);
     }
-
-    var history = await db.AnimalStatusHistory
-        .Where(h => h.AnimalId == id)
-        .OrderBy(h => h.ChangedAtUtc)
-        .Select(h => AnimalStatusHistoryResponse.From(h))
-        .ToListAsync();
-
-    return Results.Ok(history);
-});
+);
 
 app.Run();
 
@@ -263,7 +298,8 @@ static async Task SeedDemoTenantsAsync(IServiceProvider services)
             DateOfBirth = new DateOnly(2022, 9, 1),
             Description = "Shy at first; prefers a quiet home.",
             Status = AnimalStatus.Available,
-        });
+        }
+    );
 
     await db.SaveChangesAsync();
 }
