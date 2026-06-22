@@ -53,17 +53,15 @@ The project follows an **iterative-incremental** approach, suited to a solo, par
 
 Work proceeds iteratively-incrementally. The first milestone is a **walking skeleton** that puts the architectural spine — including tenant isolation, a cross-cutting concern — in place before any business feature, so every later feature is tenant-scoped from birth rather than retrofitted. Milestones are defined by working, demoable software (their "done" is the running system, not a calendar date), and each one is intended to stand on its own as a portfolio-usable increment.
 
-The living, issue-tracked breakdown is maintained in [ROADMAP.md](ROADMAP.md) (and as GitHub milestones); the table below is the charter-level summary and is kept in sync with it.
+The full milestone breakdown — each with its definition of done — is maintained as the **single source of truth** in [ROADMAP.md](ROADMAP.md) (and mirrored as GitHub milestones). This charter deliberately does not restate those definitions, so the two copies can't drift; the arc at a glance is:
 
-| Milestone | Definition of done |
-|---|---|
-| **M0 — Walking skeleton** | Aspire AppHost orchestrates a gateway + one business service + PostgreSQL/Redis/broker, all healthy in the dashboard. `ITenantContext` resolution and EF Core global query filters are wired, and the first automated cross-tenant isolation test passes. |
-| **M1 — Identity & access** | Token-based auth with tenant claims; roles within an organization (admin, staff, volunteer); isolation enforced through the auth pipeline. |
-| **M2 — Animals (first vertical slice)** | Animal records, intake history, and status tracking working end-to-end (API → service → data), fully tenant-scoped, with isolation tests covering the new entities. |
-| **M3 — Staff web application** | A Blazor staff-facing web app (`src/OpenShelter.Web`), Aspire-orchestrated and built on ServiceDefaults, authenticating through the M1 identity/tenant pipeline. The app shell (sign-in, tenant-aware navigation, layout, and a remembered EN/PL UI language toggle) is established, and the Animals experience works end-to-end against the live Gateway API, strictly tenant-scoped. Later domain milestones extend this same app, keeping their UI strings at parity across both languages. |
-| **M4 — Adoption & fostering** | Adoption applications + approval flow and foster placements, end-to-end and tenant-scoped, with the corresponding staff-UI screens added to the web app. |
-| **M5 — Medical scheduling & background worker** | Vaccination/treatment schedules with due dates, and their staff-UI screens in the web app; the worker service generates reminders, adoption follow-ups, and per-tenant reporting; OpenTelemetry spans tagged by tenant are visible in the dashboard. |
-| **M6 — Hardening & release** | Full isolation suite green in CI as a release gate; Docker Compose deployment with documentation; architecture diagram and README; optional Azure deployment documented. |
+- **M0 — Walking skeleton** — architectural spine: Aspire orchestration plus tenant resolution and data-layer isolation, before any business feature.
+- **M1 — Identity & access** — token-based auth with tenant claims and intra-organization roles.
+- **M2 — Animals (first vertical slice)** — animal records, intake history, and status tracking, end-to-end and tenant-scoped.
+- **M3 — Staff web application** — Blazor staff-facing app over the identity/tenant pipeline, growing with each later slice.
+- **M4 — Adoption & fostering** — adoption applications + approval flow and foster placements, with their staff-UI screens.
+- **M5 — Medical scheduling & background worker** — schedules with due dates, plus the worker service and tenant-tagged observability.
+- **M6 — Hardening & release** — full isolation suite as a CI release gate, Docker Compose deployment, architecture diagram, and README.
 
 ## Risks
 
