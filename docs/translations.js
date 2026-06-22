@@ -57,6 +57,7 @@ window.OS_I18N = {
 
     "roadmap.h2": "Roadmap",
     "roadmap.lead": "Built in steps, where each step is something that actually works and you can try — not a half-finished layer.",
+    "roadmap.full": "See the full roadmap on GitHub ↗",
     "roadmap.m0.t": "M0 — Walking skeleton",
     "roadmap.m0.d": "The foundations: the system runs end to end, and the data-privacy safeguard is proven by an automated test. ",
     "roadmap.status.done": "Done.",
@@ -91,6 +92,7 @@ window.OS_I18N = {
     "cta.h2": "Follow along — or lend a hand",
     "cta.lead": "The project is in active development, and you don't have to be a developer to help. Share how a real shelter works, improve the Polish or English wording, or just tell us what's missing — every issue, idea, and update lives openly on GitHub.",
     "cta.btn2": "Share an idea →",
+    "cta.btn3": "How to contribute →",
 
     "footer.text": "Open Shelter (OSMP) — an open-source project. Licensed AGPL-3.0."
   },
@@ -150,6 +152,7 @@ window.OS_I18N = {
 
     "roadmap.h2": "Plan rozwoju",
     "roadmap.lead": "Budowane krok po kroku, gdzie każdy krok to coś, co naprawdę działa i można wypróbować — a nie półukończona warstwa.",
+    "roadmap.full": "Zobacz pełny plan rozwoju na GitHubie ↗",
     "roadmap.m0.t": "M0 — Działający szkielet",
     "roadmap.m0.d": "Fundamenty: system działa od początku do końca, a zabezpieczenie prywatności danych jest potwierdzone automatycznym testem. ",
     "roadmap.status.done": "Zakończono.",
@@ -184,6 +187,7 @@ window.OS_I18N = {
     "cta.h2": "Śledź projekt — albo pomóż",
     "cta.lead": "Projekt jest w aktywnym rozwoju, a żeby pomóc, wcale nie trzeba umieć programować. Opowiedz, jak naprawdę działa schronisko, popraw polskie lub angielskie teksty albo po prostu napisz, czego brakuje — wszystkie zgłoszenia, pomysły i postępy są jawne na GitHubie.",
     "cta.btn2": "Podziel się pomysłem →",
+    "cta.btn3": "Jak współtworzyć →",
 
     "footer.text": "Open Shelter (OSMP) — projekt open source. Licencja AGPL-3.0."
   }
