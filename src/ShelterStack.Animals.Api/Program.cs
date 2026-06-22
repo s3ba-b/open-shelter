@@ -165,6 +165,63 @@ animals.MapPut("/{id:guid}", async (Guid id, UpdateAnimalRequest request, Animal
     return Results.Ok(AnimalResponse.From(animal));
 });
 
+// Move an animal to a new status, rejecting illegal transitions (e.g. Adopted straight back to
+// Intake) with a 400 and recording every accepted change as a status-history row. The query
+// filter scopes the lookup to the caller's tenant, so a cross-tenant id is a 404 exactly as for
+// the other write paths.
+animals.MapPost("/{id:guid}/status", async (
+    Guid id, ChangeAnimalStatusRequest request, AnimalsDbContext db, ITenantContext tenant) =>
+{
+    var animal = await db.Animals.FirstOrDefaultAsync(a => a.Id == id);
+    if (animal is null)
+    {
+        return Results.NotFound();
+    }
+
+    if (!AnimalStatusTransitions.IsAllowed(animal.Status, request.Status))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            [nameof(request.Status)] =
+                [$"Cannot move an animal from {animal.Status} to {request.Status}."],
+        });
+    }
+
+    animal.Status = request.Status;
+    db.AnimalStatusHistory.Add(new AnimalStatusHistory
+    {
+        Id = Guid.NewGuid(),
+        TenantId = tenant.TenantId,
+        AnimalId = animal.Id,
+        Status = request.Status,
+        ChangedAtUtc = DateTimeOffset.UtcNow,
+    });
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok(AnimalResponse.From(animal));
+});
+
+// List an animal's status-change history, oldest first. Tenant-scoped via the query filter on
+// AnimalStatusHistory, and the Animal lookup above means a cross-tenant animal id is a 404
+// rather than an empty history list — the two are not the same thing to the caller.
+animals.MapGet("/{id:guid}/status-history", async (Guid id, AnimalsDbContext db) =>
+{
+    var animalExists = await db.Animals.AnyAsync(a => a.Id == id);
+    if (!animalExists)
+    {
+        return Results.NotFound();
+    }
+
+    var history = await db.AnimalStatusHistory
+        .Where(h => h.AnimalId == id)
+        .OrderBy(h => h.ChangedAtUtc)
+        .Select(h => AnimalStatusHistoryResponse.From(h))
+        .ToListAsync();
+
+    return Results.Ok(history);
+});
+
 app.Run();
 
 static async Task SeedDemoTenantsAsync(IServiceProvider services)
@@ -193,6 +250,7 @@ static async Task SeedDemoTenantsAsync(IServiceProvider services)
             Sex = AnimalSex.Male,
             DateOfBirth = new DateOnly(2021, 4, 12),
             Description = "Friendly, house-trained; good with children.",
+            Status = AnimalStatus.Available,
         },
         new Animal
         {
@@ -204,6 +262,7 @@ static async Task SeedDemoTenantsAsync(IServiceProvider services)
             Sex = AnimalSex.Female,
             DateOfBirth = new DateOnly(2022, 9, 1),
             Description = "Shy at first; prefers a quiet home.",
+            Status = AnimalStatus.Available,
         });
 
     await db.SaveChangesAsync();

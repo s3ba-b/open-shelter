@@ -8,6 +8,8 @@ public sealed class AnimalsDbContext(DbContextOptions<AnimalsDbContext> options,
 {
     public DbSet<Animal> Animals => Set<Animal>();
 
+    public DbSet<AnimalStatusHistory> AnimalStatusHistory => Set<AnimalStatusHistory>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Animal>(entity =>
@@ -19,6 +21,7 @@ public sealed class AnimalsDbContext(DbContextOptions<AnimalsDbContext> options,
             // column stays readable and survives reordering of the enum members.
             entity.Property(a => a.Species).HasConversion<string>().HasMaxLength(20);
             entity.Property(a => a.Sex).HasConversion<string>().HasMaxLength(20);
+            entity.Property(a => a.Status).HasConversion<string>().HasMaxLength(20);
             entity.Property(a => a.Breed).HasMaxLength(200);
             entity.Property(a => a.Description).HasMaxLength(2000);
 
@@ -27,6 +30,20 @@ public sealed class AnimalsDbContext(DbContextOptions<AnimalsDbContext> options,
             // which is what lets startup seeding write rows for multiple tenants
             // through a single context instance.
             entity.HasQueryFilter(a => a.TenantId == tenantContext.TenantId);
+        });
+
+        modelBuilder.Entity<AnimalStatusHistory>(entity =>
+        {
+            entity.HasKey(h => h.Id);
+            entity.Property(h => h.Status).HasConversion<string>().HasMaxLength(20);
+
+            // No navigation property on Animal — the status endpoints look history up by
+            // AnimalId directly, so a one-directional FK is all the relationship needs.
+            entity.HasOne<Animal>().WithMany().HasForeignKey(h => h.AnimalId).IsRequired();
+
+            // Same isolation mechanism as Animals: a tenant can never read another tenant's
+            // status history, even for an animal id it happens to guess correctly.
+            entity.HasQueryFilter(h => h.TenantId == tenantContext.TenantId);
         });
     }
 }

@@ -155,6 +155,89 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         Assert.Equal("Rex", stillRex!.Name);
     }
 
+    [Fact]
+    public async Task AnimalStatus_IsIsolatedAcrossTenants()
+    {
+        using var client = _factory.CreateClient();
+
+        var created = await CreateAnimalAsync(client, DemoTenants.Northside, new CreateAnimalRequest(
+            Name: "Milo",
+            Species: AnimalSpecies.Dog,
+            Breed: null,
+            Sex: AnimalSex.Unknown,
+            DateOfBirth: null,
+            Description: null));
+
+        // Riverside cannot move Northside's animal to a new status — the query filter turns the
+        // lookup into a 404 rather than letting the mutation land.
+        using var riversideChange = await ChangeStatusAsync(
+            client, DemoTenants.Riverside, created.Id, AnimalStatus.Available);
+        Assert.Equal(HttpStatusCode.NotFound, riversideChange.StatusCode);
+
+        // Nor can Riverside read Northside's status history for that animal.
+        using var riversideHistory = await GetStatusHistoryAsync(client, DemoTenants.Riverside, created.Id);
+        Assert.Equal(HttpStatusCode.NotFound, riversideHistory.StatusCode);
+
+        // Northside's own legal transition succeeds and is recorded.
+        using var northsideChange = await ChangeStatusAsync(
+            client, DemoTenants.Northside, created.Id, AnimalStatus.Available);
+        Assert.Equal(HttpStatusCode.OK, northsideChange.StatusCode);
+
+        using var northsideHistory = await GetStatusHistoryAsync(client, DemoTenants.Northside, created.Id);
+        Assert.Equal(HttpStatusCode.OK, northsideHistory.StatusCode);
+        var history = await northsideHistory.Content.ReadFromJsonAsync<StatusHistoryEntryDto[]>();
+        Assert.NotNull(history);
+        Assert.Single(history!);
+        Assert.Equal("Available", history![0].Status);
+    }
+
+    [Fact]
+    public async Task AnimalStatus_RejectsIllegalTransitions()
+    {
+        using var client = _factory.CreateClient();
+
+        var created = await CreateAnimalAsync(client, DemoTenants.Northside, new CreateAnimalRequest(
+            Name: "Daisy",
+            Species: AnimalSpecies.Cat,
+            Breed: null,
+            Sex: AnimalSex.Unknown,
+            DateOfBirth: null,
+            Description: null));
+
+        // A freshly created animal starts at Intake; Intake -> Adopted skips Available entirely
+        // and must be rejected.
+        using var illegalChange = await ChangeStatusAsync(
+            client, DemoTenants.Northside, created.Id, AnimalStatus.Adopted);
+        Assert.Equal(HttpStatusCode.BadRequest, illegalChange.StatusCode);
+
+        // The rejected attempt left no history row and the animal's status unchanged.
+        using var history = await GetStatusHistoryAsync(client, DemoTenants.Northside, created.Id);
+        var entries = await history.Content.ReadFromJsonAsync<StatusHistoryEntryDto[]>();
+        Assert.Empty(entries!);
+    }
+
+    private async Task<HttpResponseMessage> ChangeStatusAsync(
+        HttpClient client, Guid tenantId, Guid animalId, AnimalStatus status)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"/{animalId}/status")
+        {
+            Content = JsonContent.Create(new { Status = status.ToString() }),
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer", IssueToken(tenantId, TokenAuth.StaffRole));
+
+        return await client.SendAsync(request);
+    }
+
+    private async Task<HttpResponseMessage> GetStatusHistoryAsync(HttpClient client, Guid tenantId, Guid animalId)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/{animalId}/status-history");
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer", IssueToken(tenantId, TokenAuth.AdminRole));
+
+        return await client.SendAsync(request);
+    }
+
     private async Task<AnimalDto> CreateAnimalAsync(HttpClient client, Guid tenantId, CreateAnimalRequest body)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "/") { Content = JsonContent.Create(body) };
@@ -234,5 +317,8 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         string? Breed,
         string Sex,
         DateOnly? DateOfBirth,
-        string? Description);
+        string? Description,
+        string Status);
+
+    private sealed record StatusHistoryEntryDto(Guid Id, string Status, DateTimeOffset ChangedAtUtc);
 }
