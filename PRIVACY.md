@@ -80,6 +80,11 @@ app / API** (there is no public adopter portal in scope).
 | Restriction / objection (18, 21) | manual handling path; no marketing without consent | forward-looking |
 | Complaint (77) | disclosed in the Privacy Policy (lead authority: **UODO**) | policy artifact |
 
+**Audit trail:** every action in the table above (export, rectification, erasure) is recorded
+in an immutable, per-tenant audit log (who, what, when) — see [ROADMAP.md](ROADMAP.md) M5.
+This is a deliberate differentiator: incumbent shelter software (commercial or open-source)
+does not expose this level of verifiable compliance.
+
 **Response SLA:** one calendar month from a verified request (Art. 12(3)),
 extendable for complex requests.
 
@@ -157,6 +162,10 @@ any age-confirmation wording with counsel if that ever changes.
 - Lead supervisory authority and any DPO requirement
 - Retention vs. anonymization decisions per record type
 - Trigger for a full DPIA on scope expansion
+- **Cross-tenant transfer (M7, post-v1):** a transfer moves a person's data from one
+  **controller** (the source shelter) to another (the destination shelter) — this is a
+  disclosure to a third-party controller, not just operator↔tenant processing, and needs its
+  own legal-basis assessment and controller-to-controller terms before M7 is implemented.
 
 ---
 
