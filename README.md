@@ -12,6 +12,8 @@
 
 Many small shelters and rescues run on spreadsheets and ad-hoc tools. Open Shelter is a free, self-hostable, multi-tenant platform that handles animals, intake, adoptions, fostering, and medical scheduling — built on .NET Aspire to demonstrate a modern, observable, distributed-systems architecture.
 
+See the [project charter](CHARTER.md) for the full objectives, scope, and constraints, and the [roadmap](ROADMAP.md) for the milestone-by-milestone plan.
+
 ## Features
 
 - **Multi-tenancy** — tenant = shelter/rescue organization, with per-tenant data isolation enforced at the data layer (EF Core global query filters over a resolved `ITenantContext`).
