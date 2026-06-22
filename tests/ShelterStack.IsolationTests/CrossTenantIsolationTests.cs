@@ -269,6 +269,108 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         Assert.Empty(entries!);
     }
 
+    [Fact]
+    public async Task IntakeRecords_AreIsolatedAcrossTenants()
+    {
+        using var client = _factory.CreateClient();
+
+        var northsideAnimal = await CreateAnimalAsync(
+            client,
+            DemoTenants.Northside,
+            new CreateAnimalRequest(
+                Name: "Pepper",
+                Species: AnimalSpecies.Dog,
+                Breed: null,
+                Sex: AnimalSex.Unknown,
+                DateOfBirth: null,
+                Description: null
+            )
+        );
+
+        // Failure mode 1: Riverside cannot attach an intake record to Northside's animal — the
+        // query filter turns the Animal lookup into a 404 rather than letting the record land.
+        using var riversideIntake = await RecordIntakeAsync(
+            client,
+            DemoTenants.Riverside,
+            northsideAnimal.Id,
+            new CreateIntakeRecordRequest(
+                IntakeDate: new DateOnly(2026, 1, 5),
+                IntakeType: IntakeType.Stray,
+                Notes: "Attempted cross-tenant write."
+            )
+        );
+        Assert.Equal(HttpStatusCode.NotFound, riversideIntake.StatusCode);
+
+        // Northside's own intake for that animal succeeds and is recorded.
+        using var northsideIntake = await RecordIntakeAsync(
+            client,
+            DemoTenants.Northside,
+            northsideAnimal.Id,
+            new CreateIntakeRecordRequest(
+                IntakeDate: new DateOnly(2026, 1, 5),
+                IntakeType: IntakeType.Stray,
+                Notes: "Found near the river trail."
+            )
+        );
+        Assert.Equal(HttpStatusCode.Created, northsideIntake.StatusCode);
+
+        // Failure mode 2: Riverside cannot read Northside's intake history for that animal —
+        // a 404, indistinguishable from an animal that does not exist.
+        using var riversideHistory = await GetIntakeHistoryAsync(
+            client,
+            DemoTenants.Riverside,
+            northsideAnimal.Id
+        );
+        Assert.Equal(HttpStatusCode.NotFound, riversideHistory.StatusCode);
+
+        // Northside reads its own history back, unaffected by the rejected cross-tenant attempt.
+        using var northsideHistory = await GetIntakeHistoryAsync(
+            client,
+            DemoTenants.Northside,
+            northsideAnimal.Id
+        );
+        Assert.Equal(HttpStatusCode.OK, northsideHistory.StatusCode);
+        var history = await northsideHistory.Content.ReadFromJsonAsync<IntakeRecordEntryDto[]>();
+        Assert.NotNull(history);
+        Assert.Single(history!);
+        Assert.Equal("Stray", history![0].IntakeType);
+        Assert.Equal("Found near the river trail.", history[0].Notes);
+    }
+
+    private async Task<HttpResponseMessage> RecordIntakeAsync(
+        HttpClient client,
+        Guid tenantId,
+        Guid animalId,
+        CreateIntakeRecordRequest body
+    )
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"/{animalId}/intake")
+        {
+            Content = JsonContent.Create(body),
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.StaffRole)
+        );
+
+        return await client.SendAsync(request);
+    }
+
+    private async Task<HttpResponseMessage> GetIntakeHistoryAsync(
+        HttpClient client,
+        Guid tenantId,
+        Guid animalId
+    )
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/{animalId}/intake-history");
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            IssueToken(tenantId, TokenAuth.AdminRole)
+        );
+
+        return await client.SendAsync(request);
+    }
+
     private async Task<HttpResponseMessage> ChangeStatusAsync(
         HttpClient client,
         Guid tenantId,
@@ -418,5 +520,12 @@ public sealed class CrossTenantIsolationTests : IAsyncLifetime
         Guid Id,
         string Status,
         DateTimeOffset ChangedAtUtc
+    );
+
+    private sealed record IntakeRecordEntryDto(
+        Guid Id,
+        DateOnly IntakeDate,
+        string IntakeType,
+        string? Notes
     );
 }

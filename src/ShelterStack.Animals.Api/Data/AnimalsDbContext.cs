@@ -12,6 +12,8 @@ public sealed class AnimalsDbContext(
 
     public DbSet<AnimalStatusHistory> AnimalStatusHistory => Set<AnimalStatusHistory>();
 
+    public DbSet<IntakeRecord> IntakeRecords => Set<IntakeRecord>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Animal>(entity =>
@@ -46,6 +48,21 @@ public sealed class AnimalsDbContext(
             // Same isolation mechanism as Animals: a tenant can never read another tenant's
             // status history, even for an animal id it happens to guess correctly.
             entity.HasQueryFilter(h => h.TenantId == tenantContext.TenantId);
+        });
+
+        modelBuilder.Entity<IntakeRecord>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.IntakeType).HasConversion<string>().HasMaxLength(20);
+            entity.Property(r => r.Notes).HasMaxLength(2000);
+
+            // No navigation property on Animal — same one-directional FK pattern as
+            // AnimalStatusHistory; intake history is looked up by AnimalId directly.
+            entity.HasOne<Animal>().WithMany().HasForeignKey(r => r.AnimalId).IsRequired();
+
+            // Same isolation mechanism as Animals: a tenant can never read another tenant's
+            // intake records, even for an animal id it happens to guess correctly.
+            entity.HasQueryFilter(r => r.TenantId == tenantContext.TenantId);
         });
     }
 }

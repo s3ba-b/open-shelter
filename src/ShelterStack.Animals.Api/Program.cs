@@ -257,6 +257,65 @@ animals.MapGet(
     }
 );
 
+// Record an intake for an animal (stray, surrender, transfer-in, etc.). An animal can have more
+// than one intake over its life (e.g. returned, then re-intaken), so this is additive, not a
+// replace. The query filter scopes the Animal lookup to the caller's tenant, so a cross-tenant
+// animal id is a 404 rather than letting the new record attach to someone else's animal.
+animals.MapPost(
+    "/{id:guid}/intake",
+    async (
+        Guid id,
+        CreateIntakeRecordRequest request,
+        AnimalsDbContext db,
+        ITenantContext tenant
+    ) =>
+    {
+        var animalExists = await db.Animals.AnyAsync(a => a.Id == id);
+        if (!animalExists)
+        {
+            return Results.NotFound();
+        }
+
+        var record = new IntakeRecord
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenant.TenantId,
+            AnimalId = id,
+            IntakeDate = request.IntakeDate,
+            IntakeType = request.IntakeType,
+            Notes = request.Notes,
+        };
+
+        db.IntakeRecords.Add(record);
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/{id}/intake", IntakeRecordResponse.From(record));
+    }
+);
+
+// List an animal's intake history, oldest first. Tenant-scoped via the query filter on
+// IntakeRecords, and the Animal lookup above means a cross-tenant animal id is a 404 rather
+// than an empty history list — the two are not the same thing to the caller.
+animals.MapGet(
+    "/{id:guid}/intake-history",
+    async (Guid id, AnimalsDbContext db) =>
+    {
+        var animalExists = await db.Animals.AnyAsync(a => a.Id == id);
+        if (!animalExists)
+        {
+            return Results.NotFound();
+        }
+
+        var history = await db
+            .IntakeRecords.Where(r => r.AnimalId == id)
+            .OrderBy(r => r.IntakeDate)
+            .Select(r => IntakeRecordResponse.From(r))
+            .ToListAsync();
+
+        return Results.Ok(history);
+    }
+);
+
 app.Run();
 
 static async Task SeedDemoTenantsAsync(IServiceProvider services)
