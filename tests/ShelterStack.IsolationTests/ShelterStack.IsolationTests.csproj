@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -33,7 +32,9 @@
       global Program type; the alias keeps the Animals-only M0 test's WebApplicationFactory<Program>
       unambiguous while the new test reaches Identity's host via identity::Program.
     -->
-    <ProjectReference Include="..\..\src\ShelterStack.Identity.Api\ShelterStack.Identity.Api.csproj" Aliases="identity" />
+    <ProjectReference
+      Include="..\..\src\ShelterStack.Identity.Api\ShelterStack.Identity.Api.csproj"
+      Aliases="identity"
+    />
   </ItemGroup>
-
 </Project>

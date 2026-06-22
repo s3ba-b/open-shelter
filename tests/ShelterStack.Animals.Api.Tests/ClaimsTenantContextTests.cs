@@ -23,7 +23,8 @@ public class ClaimsTenantContextTests
     {
         var tenantId = Guid.NewGuid();
         var tenantContext = new ClaimsTenantContext(
-            AccessorWithClaims(new Claim(TokenAuth.TenantIdClaim, tenantId.ToString())));
+            AccessorWithClaims(new Claim(TokenAuth.TenantIdClaim, tenantId.ToString()))
+        );
 
         Assert.Equal(tenantId, tenantContext.TenantId);
     }
@@ -31,14 +32,19 @@ public class ClaimsTenantContextTests
     [Fact]
     public void Throws_WhenTenantClaimMissing()
     {
-        Assert.Throws<InvalidOperationException>(() => new ClaimsTenantContext(AccessorWithClaims()));
+        Assert.Throws<InvalidOperationException>(() =>
+            new ClaimsTenantContext(AccessorWithClaims())
+        );
     }
 
     [Fact]
     public void Throws_WhenTenantClaimIsNotAGuid()
     {
-        Assert.Throws<InvalidOperationException>(
-            () => new ClaimsTenantContext(AccessorWithClaims(new Claim(TokenAuth.TenantIdClaim, "not-a-guid"))));
+        Assert.Throws<InvalidOperationException>(() =>
+            new ClaimsTenantContext(
+                AccessorWithClaims(new Claim(TokenAuth.TenantIdClaim, "not-a-guid"))
+            )
+        );
     }
 
     [Fact]

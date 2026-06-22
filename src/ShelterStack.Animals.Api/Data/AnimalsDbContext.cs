@@ -3,8 +3,10 @@ using ShelterStack.Animals.Api.Tenancy;
 
 namespace ShelterStack.Animals.Api.Data;
 
-public sealed class AnimalsDbContext(DbContextOptions<AnimalsDbContext> options, ITenantContext tenantContext)
-    : DbContext(options)
+public sealed class AnimalsDbContext(
+    DbContextOptions<AnimalsDbContext> options,
+    ITenantContext tenantContext
+) : DbContext(options)
 {
     public DbSet<Animal> Animals => Set<Animal>();
 
