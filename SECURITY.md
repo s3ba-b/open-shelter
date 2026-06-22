@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Open Shelter (OSMP), please report it
+If you discover a security vulnerability in ShelterStack, please report it
 privately. **Do not open a public issue.**
 
 - Email: **seb.bobrowski@proton.me**
