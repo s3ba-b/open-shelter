@@ -2,7 +2,7 @@
 
 ## What this project is
 
-Open Shelter (OSMP) — a multi-tenant SaaS platform for animal shelters and rescue
+ShelterStack — a multi-tenant SaaS platform for animal shelters and rescue
 organizations (animals, intake, adoptions, fostering, medical scheduling), built
 on .NET 10 / .NET Aspire to demonstrate distributed-systems architecture and
 multi-tenant data isolation. The milestone breakdown lives in
@@ -12,12 +12,12 @@ constraints, and licensing rationale live in the project charter
 
 ## Stack
 
-- .NET 10, orchestrated with .NET Aspire — `src/OpenShelter.AppHost` is the
-  orchestration entry point, `src/OpenShelter.ServiceDefaults` carries shared
+- .NET 10, orchestrated with .NET Aspire — `src/ShelterStack.AppHost` is the
+  orchestration entry point, `src/ShelterStack.ServiceDefaults` carries shared
   OpenTelemetry/health/resilience wiring used by every service.
 - PostgreSQL, Redis, and a message broker (RabbitMQ / Azure Service Bus) as
   Aspire-orchestrated backing resources (added as services land).
-- A staff-facing frontend is now in scope: a Blazor web app (`src/OpenShelter.Web`,
+- A staff-facing frontend is now in scope: a Blazor web app (`src/ShelterStack.Web`,
   .NET 10, Aspire-orchestrated) is planned as milestone M3 in [ROADMAP.md](ROADMAP.md).
   Don't treat the frontend as out of scope — only the public-facing adopter portal
   and mobile apps remain excluded.
@@ -42,7 +42,7 @@ protected. See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Project website
 
 `docs/` is the GitHub Pages source for the public landing page (served from
-`main` at https://s3ba-b.github.io/open-shelter/) — it is not a general docs
+`main` at https://s3ba-b.github.io/shelterstack/) — it is not a general docs
 folder, don't repurpose it. It's a hand-written static page (no build step).
 The roadmap section's "Done"/"In progress" markers and the hero badge are
 populated live via a client-side fetch against the repo's GitHub milestones

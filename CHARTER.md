@@ -2,8 +2,7 @@
 
 | Field | Value |
 |---|---|
-| **Project name** | Open Shelter — Multi-Tenant Animal Shelter & Rescue Management Platform |
-| **Acronym** | OSMP (Open Shelter Management Platform) |
+| **Project name** | ShelterStack — Multi-Tenant Animal Shelter & Rescue Management Platform |
 
 ## Project objectives (what we want to achieve)
 
@@ -19,7 +18,7 @@ The project pursues three parallel goals:
 
 | | |
 |---|---|
-| **Expected products / services** | • A deployable multi-service backend orchestrated with .NET Aspire (API gateway, identity service, one or more business services, background worker service).<br>• A staff-facing Blazor web application (`src/OpenShelter.Web`), Aspire-orchestrated, where shelter staff and volunteers manage day-to-day operations (milestone M3).<br>• Backing infrastructure wired through Aspire: PostgreSQL, Redis, and a message broker (RabbitMQ / Azure Service Bus).<br>• Complete tenant-isolation implementation with automated tests proving cross-tenant data cannot leak.<br>• Primary deployment via Docker Compose — cloud-agnostic and runnable on local/free infrastructure — with Azure Container Apps via `azd` documented as an optional cloud target.<br>• Open-source repository under a strong copyleft license (AGPL-3.0) with README, architecture diagram, setup guide, and deployment instructions. |
+| **Expected products / services** | • A deployable multi-service backend orchestrated with .NET Aspire (API gateway, identity service, one or more business services, background worker service).<br>• A staff-facing Blazor web application (`src/ShelterStack.Web`), Aspire-orchestrated, where shelter staff and volunteers manage day-to-day operations (milestone M3).<br>• Backing infrastructure wired through Aspire: PostgreSQL, Redis, and a message broker (RabbitMQ / Azure Service Bus).<br>• Complete tenant-isolation implementation with automated tests proving cross-tenant data cannot leak.<br>• Primary deployment via Docker Compose — cloud-agnostic and runnable on local/free infrastructure — with Azure Container Apps via `azd` documented as an optional cloud target.<br>• Open-source repository under a strong copyleft license (AGPL-3.0) with README, architecture diagram, setup guide, and deployment instructions. |
 | **Main functionalities and/or features** | • **Multi-tenancy:** tenant = shelter/rescue organization; per-tenant data isolation with the boundary enforced at the data layer (EF Core global query filters over a resolved `ITenantContext`).<br>• **Authentication & authorization:** token-based auth with tenant claims; role-based access within each organization (e.g. admin, staff, volunteer).<br>• **Animal management:** animal records, intake history, status tracking (available, fostered, adopted, medical hold).<br>• **Adoption workflow:** adoption applications, applicant records, approval flow.<br>• **Fostering:** foster placements and the people who provide them.<br>• **Medical scheduling:** vaccination and treatment schedules with due dates.<br>• **Background processing (worker service):** vaccination/medical-due reminders, adoption follow-up notifications, scheduled per-tenant reporting, and housekeeping jobs.<br>• **Observability:** OpenTelemetry instrumentation surfaced in the Aspire dashboard, with custom spans tagged by tenant for tenant-aware tracing. |
 
 ## Success measures
@@ -99,7 +98,7 @@ below (see Constraints and Risks).
 The project's licensing is chosen to keep the platform freely usable by shelters and rescues while preventing any party from capturing it into a closed, exploitative commercial product. Charging to sustain the product (hosting, support, ongoing development) is acceptable; closing off the code to build a proprietary money-maker that gives nothing back is what we guard against.
 
 - **License: AGPL-3.0.** Strong copyleft with the network-use ("ASP") clause. Anyone may use, self-host, and even charge for the platform, but anyone who offers it as a service must publish their complete source, including modifications, under the same license. For a multi-tenant SaaS this removes the incentive to fork-and-close: any competitor's improvements must return to the community, so no proprietary moat can form.
-- **Trademark / name control.** The project name and identity ("Open Shelter" / "OSMP") are protected separately from the code. A license governs the code; it does not stop someone from trading on the name. Reserving the name prevents forks from passing themselves off as the official project.
+- **Trademark / name control.** The project name and identity ("ShelterStack") are protected separately from the code. A license governs the code; it does not stop someone from trading on the name. Reserving the name prevents forks from passing themselves off as the official project.
 - **Contributor License Agreement (CLA) or DCO.** Required from contributors so copyright stays consolidated enough to enforce the license and, if ever needed, to relicense. Without it, each contributor retains rights over their own contributions.
 - **Optional dual licensing.** As the rights holder (backed by the CLA), the project may additionally offer paid commercial licenses to organizations that do not want to comply with AGPL's source-disclosure terms — putting control of any commercial use in the project's hands rather than forbidding it outright.
 

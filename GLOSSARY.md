@@ -1,6 +1,6 @@
 # Glossary
 
-Shared vocabulary for Open Shelter (OSMP) — domain terms a shelter worker would
+Shared vocabulary for ShelterStack — domain terms a shelter worker would
 use, and technical terms a developer needs. Kept short; if a term is widely
 understood, it isn't listed.
 
@@ -28,8 +28,8 @@ understood, it isn't listed.
 | **`ITenantContext`** | The resolved per-request tenant identity that scopes data access. |
 | **Global query filter** | An EF Core filter applied automatically to every query for a tenant-scoped entity, so the tenant boundary can't be forgotten at a call site. |
 | **.NET Aspire** | The orchestration framework that wires up the services and backing resources (PostgreSQL, Redis, broker) and provides the dashboard. |
-| **AppHost** | The Aspire orchestration entry point (`src/OpenShelter.AppHost`) that runs the whole distributed app locally. |
-| **ServiceDefaults** | Shared wiring (OpenTelemetry, health checks, resilience) used by every service (`src/OpenShelter.ServiceDefaults`). |
+| **AppHost** | The Aspire orchestration entry point (`src/ShelterStack.AppHost`) that runs the whole distributed app locally. |
+| **ServiceDefaults** | Shared wiring (OpenTelemetry, health checks, resilience) used by every service (`src/ShelterStack.ServiceDefaults`). |
 | **OpenTelemetry** | The instrumentation standard for traces, metrics, and logs, surfaced in the Aspire dashboard; spans here are tagged by tenant. |
 | **Background worker** | A service (milestone M5) that runs scheduled jobs: reminders, follow-ups, per-tenant reporting, and housekeeping (e.g. retention). |
 | **AGPL-3.0** | The project license; running it as a network service obliges the operator to offer the complete source to its users (§13). |

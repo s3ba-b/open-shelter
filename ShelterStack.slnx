@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ShelterStack.Animals.Api/ShelterStack.Animals.Api.csproj" />
+    <Project Path="src/ShelterStack.AppHost/ShelterStack.AppHost.csproj" />
+    <Project Path="src/ShelterStack.Gateway/ShelterStack.Gateway.csproj" />
+    <Project Path="src/ShelterStack.Identity.Api/ShelterStack.Identity.Api.csproj" />
+    <Project Path="src/ShelterStack.ServiceDefaults/ShelterStack.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ShelterStack.Animals.Api.Tests/ShelterStack.Animals.Api.Tests.csproj" />
+    <Project Path="tests/ShelterStack.Identity.Api.IntegrationTests/ShelterStack.Identity.Api.IntegrationTests.csproj" />
+    <Project Path="tests/ShelterStack.Identity.Api.IsolationTests/ShelterStack.Identity.Api.IsolationTests.csproj" />
+    <Project Path="tests/ShelterStack.Identity.Api.Tests/ShelterStack.Identity.Api.Tests.csproj" />
+    <Project Path="tests/ShelterStack.IsolationTests/ShelterStack.IsolationTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,4 +1,4 @@
-# Contributing to Open Shelter (OSMP)
+# Contributing to ShelterStack
 
 Thanks for your interest in contributing! This document describes how work flows
 through the project.
@@ -31,8 +31,8 @@ Direct commits to `main` are not allowed; `main` is protected.
 ## Development setup
 
 ```bash
-git clone git@github.com:s3ba-b/open-shelter.git
-cd open-shelter
+git clone git@github.com:s3ba-b/shelterstack.git
+cd shelterstack
 dotnet restore
 ```
 
