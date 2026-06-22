@@ -64,3 +64,25 @@ public sealed record AnimalStatusHistoryResponse(
     public static AnimalStatusHistoryResponse From(AnimalStatusHistory history) =>
         new(history.Id, history.Status, history.ChangedAtUtc);
 }
+
+/// <summary>Fields accepted when recording an intake for an animal. <c>TenantId</c> and
+/// <c>AnimalId</c> are deliberately absent from the body — the tenant comes from the caller's
+/// token and the animal from the route, never from request data.</summary>
+public sealed record CreateIntakeRecordRequest(
+    DateOnly IntakeDate,
+    IntakeType IntakeType,
+    string? Notes
+);
+
+/// <summary>One row of an animal's intake history, as returned by the list-intake-history
+/// endpoint.</summary>
+public sealed record IntakeRecordResponse(
+    Guid Id,
+    DateOnly IntakeDate,
+    IntakeType IntakeType,
+    string? Notes
+)
+{
+    public static IntakeRecordResponse From(IntakeRecord record) =>
+        new(record.Id, record.IntakeDate, record.IntakeType, record.Notes);
+}
