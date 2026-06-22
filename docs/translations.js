@@ -43,7 +43,7 @@ window.OS_I18N = {
     "preview.note": "Mock-ups are a non-binding design reference; the finished app may differ.",
 
     "arch.badge": "For developers",
-    "arch.h2": "Built to demonstrate, not just to work",
+    "arch.h2": "A real tool — and a reference build",
     "arch.lead": "Open Shelter also serves as a reference implementation of cloud-native, multi-tenant architecture on .NET. If you're not a developer, feel free to skip this part — none of it changes what the tool does for your shelter.",
     "arch.pill.azure": "Azure Container Apps (optional)",
     "arch.b1.t": "Aspire-orchestrated services",
@@ -138,7 +138,7 @@ window.OS_I18N = {
     "preview.note": "Makiety to niewiążący materiał projektowy; gotowa aplikacja może się różnić.",
 
     "arch.badge": "Dla programistów",
-    "arch.h2": "Zbudowane, by demonstrować, a nie tylko działać",
+    "arch.h2": "Prawdziwe narzędzie — i wzorcowa implementacja",
     "arch.lead": "Open Shelter służy też jako wzorcowa implementacja architektury cloud-native i wielodostępnej na platformie .NET. Jeśli nie jesteś programistą, możesz spokojnie pominąć tę część — nic z niej nie zmienia tego, co narzędzie robi dla Twojego schroniska.",
     "arch.pill.azure": "Azure Container Apps (opcjonalnie)",
     "arch.b1.t": "Usługi orkiestrowane przez Aspire",
