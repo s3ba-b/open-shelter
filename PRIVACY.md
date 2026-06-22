@@ -38,7 +38,6 @@ attached to them are).
 | Adoption applicant | name, contact details, application answers | No (re-assess if home-visit / health notes are added) |
 | Foster | name, contact details, placement history | No |
 | Volunteer | name, contact details | No |
-| Attached documents | files attached to a record (e.g. an applicant's ID/proof document, a medical certificate/scan) — may contain any of the categories above | No (re-assess per attachment if health data about a person appears) |
 | Technical | IP, user agent, auth logs | No |
 
 ## Purposes & legal bases (internal record — Art. 30 ROPA)
@@ -80,10 +79,6 @@ app / API** (there is no public adopter portal in scope).
 | Erasure (17) | delete a person's data, with cascade / anonymization of related records | M4 + M5 (worker anonymization) |
 | Restriction / objection (18, 21) | manual handling path; no marketing without consent | forward-looking |
 | Complaint (77) | disclosed in the Privacy Policy (lead authority: **UODO**) | policy artifact |
-
-**Attachments:** export and erasure cover any file attached to a person's record
-(e.g. an uploaded ID/proof document) via the Attachment capability
-([ROADMAP.md](ROADMAP.md) M2), not just structured fields.
 
 **Audit trail:** every action in the table above (export, rectification, erasure) is recorded
 in an immutable, per-tenant audit log (who, what, when) — see [ROADMAP.md](ROADMAP.md) M5.
