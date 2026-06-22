@@ -42,6 +42,7 @@ system's requirements.
 | Shelter / rescue organizations | Human, direct | Tenants and data **controllers**; require strict isolation of their data. |
 | Operator (whoever hosts a shared instance) | Human, direct | Data **processor**; carries the GDPR/operational obligations in [PRIVACY.md](PRIVACY.md). |
 | Adoption applicants, fosters, volunteers | Human, indirect | Data subjects whose personal data is processed; their rights drive concrete features. |
+| Destination tenant (M7 transfer recipient) | Human, indirect | Another shelter/rescue that must give explicit consent before receiving a transferred animal record and its associated data. |
 | Project author / contributors | Human, direct | Build and maintain the platform; bound by the AGPL/DCO. |
 | GDPR / RODO regulation | Inanimate, indirect | Imposes data-protection requirements (see [PRIVACY.md](PRIVACY.md)). |
 | .NET Aspire (upstream) | Inanimate, direct | Frequent releases and breaking changes constrain structure and upgrade cadence. |
@@ -54,7 +55,7 @@ system's requirements.
 - **Aspire release cadence:** Aspire ships frequently and has had breaking changes between minor versions, so dependencies must be kept current (via `aspire update`) and version-pinned deliberately.
 - **Non-commercial framing:** no budget for paid cloud services beyond free tiers / personal credits; deployment targets and resource choices must remain affordable or free for demonstration purposes.
 - **Domain accuracy:** the shelter/rescue domain model is a reasonable simplification, not a validated reflection of any specific organization's real-world processes.
-- **Scope boundaries:** payment processing, public-facing adopter portals, and mobile apps are explicitly out of scope for this version. The internal staff-facing web UI is in scope (a Blazor app, milestone M3) and is distinct from the excluded public-facing adopter portal.
+- **Scope boundaries:** payment processing, public-facing adopter portals, and mobile apps are explicitly out of scope for this version. The internal staff-facing web UI is in scope (a Blazor app, milestone M3) and is distinct from the excluded public-facing adopter portal. As a separate, deliberate exception, the post-v1 **M7** milestone introduces one narrow, consent-gated extension to the tenant-isolation boundary (a controlled cross-tenant transfer) — see Risks below; it does not reopen the payments/portal/mobile exclusions.
 
 ## Working methodology
 
@@ -79,6 +80,10 @@ The full milestone breakdown — each with its definition of done — is maintai
 - **M5 — Medical scheduling & background worker** — schedules with due dates, plus the worker service and tenant-tagged observability.
 - **M6 — Hardening & release** — full isolation suite as a CI release gate, Docker Compose deployment, architecture diagram, and README.
 
+Beyond this original arc, [ROADMAP.md](ROADMAP.md) also plans a **post-v1 extension, M7 —
+Cross-tenant federation & transfers**, a deliberate, narrow exception to the scope boundaries
+below (see Constraints and Risks).
+
 ## Risks
 
 | Risk | Impact | Mitigation |
@@ -87,6 +92,7 @@ The full milestone breakdown — each with its definition of done — is maintai
 | **Aspire breaking changes between versions** | Time lost to churn; the charter itself notes frequent releases. | Pin the Aspire version deliberately, update on a controlled schedule via `aspire update`, and isolate Aspire-specific wiring so churn stays contained. |
 | **Scope creep in the shelter/rescue domain** | Solo, part-time capacity gets consumed modelling edge cases. | Keep the domain a deliberate simplification; anything outside the listed feature set is deferred, not absorbed. |
 | **Solo / part-time capacity** | Later milestones may slip. | Incremental milestones with the walking skeleton first, so the project is demoable and portfolio-usable even if M5–M6 slip. |
+| **Cross-tenant transfer (M7) as the one sanctioned boundary crossing** | Same severity class as the cross-tenant data leak risk above — a flawed implementation has the same effect: one tenant's data reaching another tenant without authorization. | Require explicit, mutual consent from both tenants before any transfer; record the full transfer in the audit log (see ROADMAP.md M5/M7); cover the path with a dedicated **negative-path isolation test** (no consent → no data crosses), run in the same CI isolation gate as every other tenant-scoped test. |
 
 ## Licensing strategy
 
