@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    <NavMenu />
+
+    <main>
+        <header class="top-bar">
+            <div class="org">
+                @* Tenant-aware: replaced with the signed-in user's organization once auth lands (#82). *@
+                <span class="org-name">Demo Shelter</span>
+            </div>
+            <div class="top-bar-actions">
+                @* Reserved for the EN/PL language toggle (#83) and the user/sign-out menu (#82). *@
+            </div>
+        </header>
+
+        <article class="content">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
