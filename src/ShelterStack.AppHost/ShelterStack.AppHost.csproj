@@ -17,5 +17,6 @@
     <ProjectReference Include="..\ShelterStack.Animals.Api\ShelterStack.Animals.Api.csproj" />
     <ProjectReference Include="..\ShelterStack.Gateway\ShelterStack.Gateway.csproj" />
     <ProjectReference Include="..\ShelterStack.Identity.Api\ShelterStack.Identity.Api.csproj" />
+    <ProjectReference Include="..\ShelterStack.Web\ShelterStack.Web.csproj" />
   </ItemGroup>
 </Project>

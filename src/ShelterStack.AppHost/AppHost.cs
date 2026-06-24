@@ -18,11 +18,19 @@ var identityApi = builder
     .WithReference(identityDb)
     .WaitFor(identityDb);
 
-builder
+var gateway = builder
     .AddProject<Projects.ShelterStack_Gateway>("gateway")
     .WithReference(animalsApi)
     .WaitFor(animalsApi)
     .WithReference(identityApi)
     .WaitFor(identityApi);
+
+// Staff-facing Blazor web app. It talks to the backend only through the gateway
+// (never directly to a business service) and is the app's external HTTP endpoint.
+builder
+    .AddProject<Projects.ShelterStack_Web>("web")
+    .WithReference(gateway)
+    .WaitFor(gateway)
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();
