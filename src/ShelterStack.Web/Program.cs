@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components.Authorization;
+using ShelterStack.Web.Auth;
 using ShelterStack.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,12 +10,22 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
-// All backend calls go through the gateway, never directly to a business service.
-// The base address is a logical service name resolved by Aspire service discovery
-// (configured via AddServiceDefaults) to the gateway's real endpoint at runtime.
-builder.Services.AddHttpClient(
-    "gateway",
-    client => client.BaseAddress = new Uri("https+http://gateway")
+// Authenticated session (token + tenant/role/org claims) for the current circuit. The same
+// scoped instance backs Blazor's AuthenticationStateProvider so AuthorizeView/AuthorizeRouteView
+// react to sign-in and sign-out.
+builder.Services.AddScoped<WebAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+    sp.GetRequiredService<WebAuthenticationStateProvider>()
+);
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+
+// All backend calls go through the gateway, never directly to a business service, via the
+// GatewayClient typed client (which attaches the session's Bearer token). The base address is a
+// logical service name resolved by Aspire service discovery (configured via AddServiceDefaults)
+// to the gateway's real endpoint at runtime.
+builder.Services.AddHttpClient<GatewayClient>(client =>
+    client.BaseAddress = new Uri("https+http://gateway")
 );
 
 var app = builder.Build();

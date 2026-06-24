@@ -313,6 +313,14 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .btn-block { width: 100%; justify-content: center; padding: 12px; margin-top: 6px; }
 .auth-alt { text-align: center; margin-top: 22px; font-size: 0.86rem; color: var(--muted); }
 .auth-alt a { color: var(--primary-700); font-weight: 600; }
+.auth-error {
+  background: var(--st-quarantine-bg); color: var(--st-quarantine);
+  border: 1px solid var(--st-quarantine); border-radius: var(--radius-sm);
+  padding: 10px 13px; font-size: 0.85rem; margin-bottom: 18px;
+}
+.field .validation-message { display: block; color: var(--st-quarantine); font-size: 0.74rem; margin-top: 5px; }
+.user .btn-signout { width: 30px; height: 30px; border-color: transparent; background: transparent; color: var(--muted-2); }
+.user .btn-signout:hover { background: var(--surface-3); color: var(--text-2); }
 
 /* =========================================================
    RESPONSIVE

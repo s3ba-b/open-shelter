@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+      Reads the (already-validated-at-the-API) JWT's claims client-side so the shell can
+      reflect the signed-in tenant/role/organization. The web app never validates or trusts
+      the token for authorization — the Gateway APIs do that — it only decodes it for display.
+    -->
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ShelterStack.ServiceDefaults\ShelterStack.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>

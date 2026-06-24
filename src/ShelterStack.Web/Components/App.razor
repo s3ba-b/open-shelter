@@ -11,13 +11,20 @@
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["ShelterStack.Web.styles.css"]" />
     <ImportMap />
-    <HeadOutlet />
+    <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 
 <body>
-    <Routes />
+    <Routes @rendermode="InteractiveServer" />
     <ReconnectModal />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 
 </html>
+
+@* Interactive server with prerendering off: the authenticated session lives in the circuit, so
+   evaluating auth state (and reading the token) only makes sense once the circuit is live —
+   prerendering would first render every protected route as signed-out. *@
+@code {
+    private static readonly InteractiveServerRenderMode InteractiveServer = new(prerender: false);
+}

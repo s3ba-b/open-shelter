@@ -17,8 +17,8 @@ namespace ShelterStack.Identity.Api.IntegrationTests;
 /// <summary>
 /// Exercises <c>POST /login</c> through the real Identity API host over HTTP against a real
 /// Postgres container, against the seeded demo users: valid credentials yield a 200 with a
-/// JWT carrying the user's tenant and role, bad credentials yield 401, and the issued token
-/// validates against the host's configured signing key.
+/// JWT carrying the user's tenant, role, and organization name, bad credentials yield 401, and
+/// the issued token validates against the host's configured signing key.
 /// </summary>
 public sealed class LoginEndpointTests : IAsyncLifetime
 {
@@ -51,7 +51,7 @@ public sealed class LoginEndpointTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ValidCredentials_Return200WithTenantAndRoleClaims()
+    public async Task ValidCredentials_Return200WithTenantRoleAndOrgClaims()
     {
         using var client = _factory.CreateClient();
 
@@ -75,6 +75,7 @@ public sealed class LoginEndpointTests : IAsyncLifetime
             principal.FindFirst(JwtTokenIssuer.TenantIdClaim)?.Value
         );
         Assert.Equal("Admin", principal.FindFirst(JwtTokenIssuer.RoleClaim)?.Value);
+        Assert.Equal("Northside Shelter", principal.FindFirst(JwtTokenIssuer.OrgNameClaim)?.Value);
     }
 
     [Theory]
