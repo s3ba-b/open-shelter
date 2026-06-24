@@ -6,12 +6,14 @@
         <span class="brand-name">ShelterStack</span>
     </div>
 
-    @* Tenant-aware: replaced with the signed-in user's real organization once auth lands (#82). *@
-    <div class="org disabled" title="Organization">
-        <span class="org-logo">·</span>
-        <span class="org-meta"><b>Organization</b><span>Sign in to load</span></span>
-        <svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-    </div>
+    @* The signed-in user's organization, named from the token's org_name claim. A single
+       tenant per session in M1, so this is a label rather than a switcher for now. *@
+    <AuthorizeView>
+        <div class="org disabled" title="Organization">
+            <span class="org-logo">@Initials(OrgName(context.User))</span>
+            <span class="org-meta"><b>@OrgName(context.User)</b><span>Your organization</span></span>
+        </div>
+    </AuthorizeView>
 
     <nav class="nav">
         <NavLink class="nav-item" href="" Match="NavLinkMatch.All">
@@ -50,5 +52,59 @@
         </span>
     </nav>
 
-    @* Signed-in user, organization, and sign-out land here once auth lands (#82). *@
+    @* Signed-in user with a sign-out control. Email is display-only; the role comes from the
+       token's role claim. *@
+    <AuthorizeView>
+        <div class="sidebar-foot">
+            <div class="user">
+                <span class="avatar">@Initials(Email(context.User))</span>
+                <span class="user-meta"><b>@Email(context.User)</b><span>@Role(context.User)</span></span>
+                <button class="icon-btn btn-signout" title="Sign out" aria-label="Sign out" @onclick="SignOut">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
+                </button>
+            </div>
+        </div>
+    </AuthorizeView>
 </aside>
+
+@code {
+    [Inject]
+    private WebAuthenticationStateProvider Auth { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    private static string OrgName(System.Security.Claims.ClaimsPrincipal user)
+    {
+        var name = user.FindFirst(TokenClaims.OrgName)?.Value;
+        return string.IsNullOrWhiteSpace(name) ? "Your organization" : name;
+    }
+
+    private static string Email(System.Security.Claims.ClaimsPrincipal user) =>
+        user.FindFirst(TokenClaims.Email)?.Value ?? "Signed in";
+
+    private static string Role(System.Security.Claims.ClaimsPrincipal user) =>
+        user.FindFirst(TokenClaims.Role)?.Value ?? string.Empty;
+
+    // Up to two initials from the first two words (e.g. "Northside Shelter" -> "NS"); falls back
+    // to the first character for single-token values like an email local-part.
+    private static string Initials(string value)
+    {
+        var parts = value.Split(
+            new[] { ' ', '@', '.', '-' },
+            StringSplitOptions.RemoveEmptyEntries
+        );
+        return parts.Length switch
+        {
+            0 => "·",
+            1 => parts[0][..1].ToUpperInvariant(),
+            _ => (parts[0][..1] + parts[1][..1]).ToUpperInvariant(),
+        };
+    }
+
+    private void SignOut()
+    {
+        Auth.SignOut();
+        Navigation.NavigateTo("login");
+    }
+}

@@ -1,6 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
 
+@* Route guard: every page wrapped by this layout requires a signed-in session. An
+   unauthenticated visitor is redirected to sign-in (with a return URL) and the shell is not
+   rendered. The sign-in page deliberately uses the chromeless EmptyLayout, so it is exempt. *@
+@if (_authenticated)
+{
 <div class="app">
     <NavMenu />
 
@@ -13,7 +18,8 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
                 <input placeholder="Search animals, people, applications…" disabled />
             </div>
-            @* Notification bell + the EN/PL toggle (#83) and user/sign-out menu (#82) land here. *@
+            @* Notification bell + the EN/PL toggle (#83) land here. The signed-in user and
+               sign-out control live in the sidebar foot (NavMenu), matching the design mock-up. *@
             <button class="icon-btn" disabled>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
             </button>
@@ -30,8 +36,36 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+}
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    private bool _authenticated;
+
+    // Re-runs whenever the cascading auth state changes (sign-in/sign-out), so signing out from
+    // a protected page bounces straight to sign-in.
+    protected override async Task OnParametersSetAsync()
+    {
+        if (AuthState is null)
+        {
+            return;
+        }
+
+        var user = (await AuthState).User;
+        _authenticated = user.Identity?.IsAuthenticated == true;
+
+        if (!_authenticated)
+        {
+            var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+            var target = string.IsNullOrEmpty(returnUrl)
+                ? "login"
+                : $"login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+            Navigation.NavigateTo(target, replace: true);
+        }
+    }
+
     private string CurrentPageTitle =>
         Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/') switch
         {

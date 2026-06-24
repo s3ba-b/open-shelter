@@ -1,5 +1,9 @@
 ﻿<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
+        @* MainLayout guards every page it wraps: an unauthenticated visitor is redirected to
+           sign-in. Protection is enforced in the circuit (the session is an in-memory token,
+           not an HTTP auth scheme), so it lives at the component level rather than as page
+           [Authorize] endpoint metadata. The sign-in page uses a chromeless layout instead. *@
         <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>

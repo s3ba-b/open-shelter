@@ -78,7 +78,18 @@ app.MapPost(
             return Results.Unauthorized();
         }
 
-        return Results.Ok(new LoginResponse(tokenIssuer.IssueAccessToken(user)));
+        // The user's organization name rides along in the token (org_name claim) so the web
+        // shell can label the tenant; it spans tenants like the user lookup above, hence the
+        // same filter bypass. Tenant isolation still keys off tenant_id, never this name.
+        var organizationName =
+            await db
+                .Organizations.IgnoreQueryFilters()
+                .Where(o => o.Id == user.TenantId)
+                .Select(o => o.Name)
+                .FirstOrDefaultAsync()
+            ?? string.Empty;
+
+        return Results.Ok(new LoginResponse(tokenIssuer.IssueAccessToken(user, organizationName)));
     }
 );
 
